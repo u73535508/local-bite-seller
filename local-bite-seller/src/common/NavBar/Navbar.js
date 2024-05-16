@@ -21,12 +21,11 @@ import classes from "./NavBar.module.css";
 import { SearchBox } from "../SearchBox/SearchBox";
 const Navbar = ({ onSearch }) => {
   const navigate = useNavigate();
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
   const { logout, currentUser } = useUser();
-  // const selectedCategory = useSelector((state) => state.category);
-  const selectedCategory = "";
+  const selectedCategory = useSelector((state) => state.category);
   useEffect(() => {
     const fetchCurrentUser = async () => {
       setLoading(true);
@@ -40,20 +39,20 @@ const Navbar = ({ onSearch }) => {
   }, [currentUser]);
 
   const handleLogoClick = () => {
-    // dispatch(setCategory(""));
+    dispatch(setCategory(""));
     window.location.href = "/";
   };
   const handleFavProductsClick = () => {
     console.log("user", user);
-    // dispatch(setCategory(""));
+    dispatch(setCategory(""));
     navigate("/", { state: { showFavorites: true } });
   };
   const handleCategoryClick = (category) => {
     navigate("/");
-    // dispatch(setCategory(category));
+    dispatch(setCategory(category));
   };
   const handleLogout = async () => {
-    // dispatch(setCategory(""));
+    dispatch(setCategory(""));
     await logout();
     window.location.href = "/";
   };
@@ -67,7 +66,7 @@ const Navbar = ({ onSearch }) => {
     navigate(`/basket/${user.id}`);
   };
   const handleLogin = () => {
-    // dispatch(setCategory(""));
+    dispatch(setCategory(""));
     navigate("/register");
   };
 

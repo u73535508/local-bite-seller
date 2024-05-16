@@ -14,8 +14,7 @@ const Home = ({ searchText }) => {
   const [loading, setLoading] = useState(false);
   const token = sessionStorage.getItem("accessToken");
   const location = useLocation();
-  //   const filteredCategory = useSelector((state) => state.category);
-  const filteredCategory = "";
+  const filteredCategory = useSelector((state) => state.category);
   const [favProductIds, setFavProductIds] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [products, setProducts] = useState([]);

@@ -8,15 +8,14 @@ import classes from "./Sidebar.module.css";
 import ConfigProvider from "antd/es/config-provider";
 const Sidebar = () => {
   const navigate = useNavigate();
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const location = useLocation();
   const [displayCats, setDisplayCats] = useState(true);
-  // const selectedCategory = useSelector((state) => state.category);
-  const selectedCategory = "";
+  const selectedCategory = useSelector((state) => state.category);
   const handleCategoryClick = (category) => {
     navigate("/");
     console.log("category", category);
-    // dispatch(setCategory(category));
+    dispatch(setCategory(category));
   };
   const toggleCats = () => {
     setDisplayCats((prev) => !prev);
