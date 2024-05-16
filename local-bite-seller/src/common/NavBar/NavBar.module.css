@@ -1,0 +1,24 @@
+.navBar {
+  /*background-color: green;
+  /* margin-left: 5%; */
+}
+.logo {
+  float: left;
+  font-size: 2rem;
+  font-weight: bold;
+  color: green;
+  cursor: pointer;
+  margin-right: 2rem;
+}
+.logo:hover {
+  text-decoration: none;
+}
+
+.navItem {
+  float: right;
+}
+
+a:hover {
+  cursor: pointer;
+  color: #addbb1;
+}
