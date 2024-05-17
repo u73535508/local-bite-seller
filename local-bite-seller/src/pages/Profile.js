@@ -44,7 +44,7 @@ export default function ProfilePage() {
             theme={{
               components: {
                 Spin: {
-                  colorPrimary: "#55B45D",
+                  colorPrimary: "#F0CA95",
                 },
               },
             }}
@@ -83,45 +83,67 @@ export default function ProfilePage() {
   return (
     <div>
       <h2>Bilgilerim</h2>
-      <Form layout="vertical" form={form} onFinish={onFinish}>
-        <Form.Item
-          label="İsim"
-          name="first_name"
-          rules={[{ required: true, message: "Lütfen isminizi girin." }]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label="Soyisim"
-          name="last_name"
-          rules={[{ required: true, message: "Lütfen soyisminizi girin." }]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label="E-posta"
-          name="email"
-          rules={[
-            { required: true, message: "Lütfen e-posta adresinizi girin." },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label="Telefon Numarası"
-          name="phone_number"
-          rules={[
-            { required: true, message: "Lütfen telefon numaranızı girin." },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit" loading={loading}>
-            Güncelle
-          </Button>
-        </Form.Item>
-      </Form>
+      <ConfigProvider
+        theme={{
+          components: {
+            Input: {
+              colorBorder: "#E9AA53",
+              hoverBorderColor: "#F0CA95",
+              activeBorderColor: "#F0CA95",
+              colorSuccessBg: "#F0CA95",
+              colorSuccessBgHover: "red",
+            },
+            Button: {
+              colorPrimary: "#E9AA53",
+              colorPrimaryHover: "#ECB76C",
+            },
+            Checkbox: {
+              colorPrimary: "#E9AA53",
+              colorPrimaryHover: "#F0CA95",
+            },
+          },
+        }}
+      >
+        <Form layout="vertical" form={form} onFinish={onFinish}>
+          <Form.Item
+            label="İsim"
+            name="first_name"
+            rules={[{ required: true, message: "Lütfen isminizi girin." }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Soyisim"
+            name="last_name"
+            rules={[{ required: true, message: "Lütfen soyisminizi girin." }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="E-posta"
+            name="email"
+            rules={[
+              { required: true, message: "Lütfen e-posta adresinizi girin." },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Telefon Numarası"
+            name="phone_number"
+            rules={[
+              { required: true, message: "Lütfen telefon numaranızı girin." },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" loading={loading}>
+              Güncelle
+            </Button>
+          </Form.Item>
+        </Form>
+      </ConfigProvider>
     </div>
   );
 }

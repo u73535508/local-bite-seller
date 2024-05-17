@@ -76,16 +76,19 @@ const Navbar = ({ onSearch }) => {
         theme={{
           components: {
             Menu: {
-              horizontalItemSelectedColor: "#ADDBB1",
+              horizontalItemSelectedColor: "#E9AA53",
             },
             Input: {
-              colorBorder: "#ADDBB1",
-              hoverBorderColor: "#55B45D",
-              activeBorderColor: "#55B45D",
+              colorBorder: "#E9AA53",
+              hoverBorderColor: "#F0CA95",
+              activeBorderColor: "#F0CA95",
+              colorSuccessBg: "#F0CA95",
+              colorSuccessBgHover: "red",
             },
             Button: {
-              colorPrimary: "#55B45D",
-              colorPrimaryHover: "#71C178",
+              colorPrimary: "#E9AA53",
+              colorPrimaryActive: "#E9AA53",
+              colorPrimaryHover: "#ECB76C",
             },
           },
         }}
@@ -105,7 +108,7 @@ const Navbar = ({ onSearch }) => {
             key="map"
             onClick={() => navigate("/map")}
             style={{
-              background: "#55B45D",
+              background: "#E9AA53",
               color: "white",
               width: "80px",
               height: "40px",
@@ -174,34 +177,34 @@ const Navbar = ({ onSearch }) => {
                 justifyContent: "space-between",
               }}
             >
-              <Menu.Item
+              {/* <Menu.Item
                 key="basket"
                 icon={<ShoppingCartOutlined />}
                 onClick={goToBasketPage}
               >
                 Sepetim
-              </Menu.Item>
+              </Menu.Item> */}
               <Menu.Item
                 key="info"
                 icon={<InfoCircleOutlined />}
-                onClick={() => navigate(`/info`)}
+                onClick={() => navigate(`/profile`)}
               >
                 Profilim
               </Menu.Item>
-              <Menu.Item
+              {/* <Menu.Item
                 key="addresses"
                 icon={<HomeOutlined />}
                 onClick={() => navigate(`/addresses`)}
               >
                 Adreslerim
-              </Menu.Item>
-              <Menu.Item
+              </Menu.Item> */}
+              {/* <Menu.Item
                 key="favorites"
                 icon={<HeartOutlined />}
                 onClick={handleFavProductsClick}
               >
                 Favori Ürünlerim
-              </Menu.Item>
+              </Menu.Item> */}
               {/* <Menu.Item
                 key="vendors"
                 icon={<UserOutlined />}

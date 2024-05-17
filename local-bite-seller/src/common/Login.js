@@ -33,19 +33,19 @@ const Login = () => {
         theme={{
           components: {
             Input: {
-              colorBorder: "#ADDBB1",
-              hoverBorderColor: "#55B45D",
-              activeBorderColor: "#55B45D",
-              colorSuccessBg: "#55B45D",
+              colorBorder: "#E9AA53",
+              hoverBorderColor: "#F0CA95",
+              activeBorderColor: "#F0CA95",
+              colorSuccessBg: "##F0CA95",
               colorSuccessBgHover: "red",
             },
             Button: {
-              colorPrimary: "#55B45D",
-              colorPrimaryHover: "#71C178",
+              colorPrimary: "#E9AA53",
+              colorPrimaryHover: "#ECB76C",
             },
             Checkbox: {
-              colorPrimary: "#55B45D",
-              colorPrimaryHover: "#71C178",
+              colorPrimary: "#E9AA53",
+              colorPrimaryHover: "#F0CA95",
             },
           },
         }}

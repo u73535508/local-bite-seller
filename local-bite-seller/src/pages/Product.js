@@ -272,7 +272,7 @@ const Product = () => {
             theme={{
               components: {
                 Spin: {
-                  colorPrimary: "#55B45D",
+                  colorPrimary: "#E9AA53",
                 },
               },
             }}
@@ -293,19 +293,20 @@ const Product = () => {
       theme={{
         components: {
           Input: {
-            colorBorder: "#ADDBB1",
-            hoverBorderColor: "#55B45D",
-            activeBorderColor: "#55B45D",
-            colorSuccessBg: "#55B45D",
+            colorBorder: "#E9AA53",
+            hoverBorderColor: "#F0CA95",
+            activeBorderColor: "#F0CA95",
+            colorSuccessBg: "#F0CA95",
             colorSuccessBgHover: "red",
           },
           Button: {
-            colorPrimary: "#55B45D",
-            colorPrimaryHover: "#71C178",
+            colorPrimary: "#E9AA53",
+            colorPrimaryHover: "#ECB76C",
+            colorPrimaryActive: "#E9AA53",
           },
           Checkbox: {
-            colorPrimary: "#55B45D",
-            colorPrimaryHover: "#71C178",
+            colorPrimary: "#E9AA53",
+            colorPrimaryHover: "#F0CA95",
           },
         },
       }}
@@ -331,7 +332,7 @@ const Product = () => {
             <Avatar
               size={40}
               style={{
-                backgroundColor: "#87d068",
+                backgroundColor: "#E9AA53",
                 cursor: "pointer",
                 marginRight: "10px",
               }}

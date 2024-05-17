@@ -77,79 +77,116 @@ const ChatBox = ({ visible, onClose }) => {
       }}
       ref={chatContainerRef} // Referansı ekleyelim
     >
-      <List
-        style={{ maxHeight: "250px", overflowY: "auto", marginBottom: "16px" }}
-        dataSource={messages}
-        renderItem={(item, index) => (
-          <List.Item
-            style={{
-              textAlign: item.isBot ? "left" : "right",
-              display: "flex",
-              justifyContent: item.isBot ? "flex-start" : "flex-end",
-            }}
-            ref={index === messages.length - 1 ? lastMessageRef : null}
-          >
-            {item.isBot && ( // Eğer mesaj bot tarafından gönderilmişse
-              <div style={{ marginRight: "8px" }}>
-                {" "}
-                {/* Araya boşluk eklemek için */}
-                <img
-                  src="https://png.pngtree.com/png-vector/20240130/ourlarge/pngtree-cute-cartoon-farmer-character-generative-ai-png-image_11568944.png"
-                  alt="AI Avatar"
-                  style={{ width: "70px", height: "70px", borderRadius: "50%" }}
-                />
-              </div>
-            )}
-            <div
-              style={{
-                padding: "8px",
-                border: "1px solid #ccc",
-                borderRadius: "4px",
-                background: item.isBot ? "#f0f0f0" : "#e6f7ff",
-              }}
-            >
-              {item.text}
-            </div>
-          </List.Item>
-        )}
-      />
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <TextArea
-          value={userMessage}
-          placeholder="Type your message..."
-          autoSize={{ minRows: 2 }}
-          onChange={(e) => setUserMessage(e.target.value)}
-          style={{ marginRight: "8px" }} // TextArea'nın sağında bir boşluk bırakmak için
-        />
-        {loading && (
-          <div style={{ textAlign: "center" }}>
-            <ConfigProvider
-              theme={{
-                components: {
-                  Spin: {
-                    colorPrimary: "#55B45D",
-                  },
-                },
-              }}
-            >
-              <Spin size="large" />
-            </ConfigProvider>
-          </div>
-        )}
-      </div>
-
-      <Button
-        type="primary"
-        onClick={() => handleSendMessage(userMessage)}
-        loading={loading}
-        disabled={!userMessage}
+      <ConfigProvider
+        theme={{
+          components: {
+            Input: {
+              colorBorder: "#E9AA53",
+              hoverBorderColor: "#F0CA95",
+              activeBorderColor: "#F0CA95",
+              colorSuccessBg: "#F0CA95",
+              colorSuccessBgHover: "red",
+            },
+            TextArea: {
+              colorBorder: "#E9AA53",
+              hoverBorderColor: "#F0CA95",
+              activeBorderColor: "#F0CA95",
+              colorSuccessBg: "#F0CA95",
+              colorSuccessBgHover: "red",
+            },
+            Button: {
+              colorPrimary: "#E9AA53",
+              colorPrimaryHover: "#ECB76C",
+            },
+            Checkbox: {
+              colorPrimary: "#E9AA53",
+              colorPrimaryHover: "#F0CA95",
+            },
+          },
+        }}
       >
-        Send
-      </Button>
+        <List
+          style={{
+            maxHeight: "250px",
+            overflowY: "auto",
+            marginBottom: "16px",
+          }}
+          dataSource={messages}
+          renderItem={(item, index) => (
+            <List.Item
+              style={{
+                textAlign: item.isBot ? "left" : "right",
+                display: "flex",
+                justifyContent: item.isBot ? "flex-start" : "flex-end",
+              }}
+              ref={index === messages.length - 1 ? lastMessageRef : null}
+            >
+              {item.isBot && ( // Eğer mesaj bot tarafından gönderilmişse
+                <div style={{ marginRight: "8px" }}>
+                  {" "}
+                  {/* Araya boşluk eklemek için */}
+                  <img
+                    src="https://png.pngtree.com/png-vector/20240130/ourlarge/pngtree-cute-cartoon-farmer-character-generative-ai-png-image_11568944.png"
+                    alt="AI Avatar"
+                    style={{
+                      width: "70px",
+                      height: "70px",
+                      borderRadius: "50%",
+                    }}
+                  />
+                </div>
+              )}
+              <div
+                style={{
+                  padding: "8px",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  background: item.isBot ? "#f0f0f0" : "#e6f7ff",
+                }}
+              >
+                {item.text}
+              </div>
+            </List.Item>
+          )}
+        />
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <TextArea
+            value={userMessage}
+            placeholder="Type your message..."
+            autoSize={{ minRows: 2 }}
+            onChange={(e) => setUserMessage(e.target.value)}
+            style={{ marginRight: "8px" }} // TextArea'nın sağında bir boşluk bırakmak için
+          />
+          {loading && (
+            <div style={{ textAlign: "center" }}>
+              <ConfigProvider
+                theme={{
+                  components: {
+                    Spin: {
+                      colorPrimary: "#F0CA95",
+                    },
+                  },
+                }}
+              >
+                <Spin size="large" />
+              </ConfigProvider>
+            </div>
+          )}
+        </div>
 
-      <Button type="default" style={{ marginTop: "8px" }} onClick={onClose}>
-        Close
-      </Button>
+        <Button
+          type="primary"
+          onClick={() => handleSendMessage(userMessage)}
+          loading={loading}
+          disabled={!userMessage}
+        >
+          Send
+        </Button>
+
+        <Button type="default" style={{ marginTop: "8px" }} onClick={onClose}>
+          Close
+        </Button>
+      </ConfigProvider>
     </div>
   );
 };

@@ -27,9 +27,9 @@ const Sidebar = () => {
         components: {
           Menu: {
             itemBg: "red",
-            itemHoverBg: "#c8f7cc",
-            itemActiveBg: "#c8f7cc",
-            itemSelectedBg: "#c8f7cc",
+            itemHoverBg: "#F0CA95",
+            itemActiveBg: "#E9AA53",
+            itemSelectedBg: "#E9AA53",
             itemSelectedColor: "black",
             subMenuItemBorderRadius: "100px",
             horizontalItemHoverBg: "yellow",

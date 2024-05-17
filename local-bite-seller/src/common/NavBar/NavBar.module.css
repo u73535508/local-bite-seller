@@ -6,7 +6,7 @@
   float: left;
   font-size: 2rem;
   font-weight: bold;
-  color: green;
+  color: #e9aa53;
   cursor: pointer;
   margin-right: 2rem;
 }
@@ -20,5 +20,5 @@
 
 a:hover {
   cursor: pointer;
-  color: #addbb1;
+  color: #f0ca95;
 }

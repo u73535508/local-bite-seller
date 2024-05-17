@@ -11,10 +11,10 @@ export default function Register() {
         theme={{
           components: {
             Tabs: {
-              inkBarColor: "#ADDBB1",
-              itemActiveColor: "#55B45D",
-              itemHoverColor: "#55B45D",
-              itemSelectedColor: "#55B45D",
+              inkBarColor: "#E9AA53",
+              itemActiveColor: "#E9AA53",
+              itemHoverColor: "#ECB76C",
+              itemSelectedColor: "#E9AA53",
               itemColor: "rgba(0, 0, 0, 0.4)",
             },
           },

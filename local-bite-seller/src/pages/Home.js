@@ -123,7 +123,7 @@ const Home = ({ searchText }) => {
             theme={{
               components: {
                 Spin: {
-                  colorPrimary: "#55B45D",
+                  colorPrimary: "#F0CA95",
                 },
               },
             }}
