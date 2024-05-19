@@ -25,65 +25,97 @@ export default function ProfilePage() {
   const navigate = useNavigate();
   const { currentUser } = useUser();
   const token = sessionStorage.getItem("accessToken");
-  const [loading, setLoading] = useState(true);
+  const [loadingInfo, setLoadingInfo] = useState(true);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [loadingReviews, setLoadingReviews] = useState(true);
   const [seller, setSeller] = useState(null);
   const [products, setProducts] = useState(null);
   const [reviews, setReviews] = useState(null);
   const [favProductIds, setFavProductIds] = useState([]);
   const [user, setUser] = useState(null);
 
-  useEffect(async () => {
-    setLoading(true);
+  useEffect(() => {
     const fetchCurrentUser = async () => {
+      setLoadingInfo(true);
       try {
         const user = await currentUser();
         console.log(user);
         setUser(user);
+        return user;
       } catch (error) {
         console.error(error);
         message.error("Kullanıcı bilgileri getirilirken bir hata oluştu.");
+      }
+      // finally {
+      //   setLoadingInfo(false);
+      // }
+    };
+
+    const fetchSeller = async (userId) => {
+      // setLoading(true);
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/seller/user/${userId}/`
+        );
+        console.log(response.data);
+        setSeller(response.data);
+        return response.data.id;
+      } catch (error) {
+        console.error(error);
+        message.error("Satıcı bilgileri getirilirken bir hata oluştu.");
       } finally {
-        setLoading(false);
+        setLoadingInfo(false);
       }
     };
-    const fetchSeller = async () => {
-      console.log(user);
-      setLoading(true);
-      const response = await axios.get(
-        `http://127.0.0.1:8000/seller/user/${user.id}/`
-      );
-      console.log(response.data);
-      setLoading(false);
-      setSeller(response.data);
-      return response.data.id;
+
+    const fetchSellerProducts = async (sellerId) => {
+      setLoadingProducts(true);
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/seller/${sellerId}/products/`
+        );
+        console.log(response.data);
+        setProducts(response.data);
+      } catch (error) {
+        console.error(error);
+        message.error("Ürün bilgileri getirilirken bir hata oluştu.");
+      } finally {
+        setLoadingProducts(false);
+      }
     };
-    const fetchSellerProducts = async (id) => {
-      setLoading(true);
-      const response = await axios.get(
-        `http://127.0.0.1:8000/seller/${id}/products/`
-      );
-      console.log(response.data);
-      setLoading(false);
-      setProducts(response.data);
-      return response.data;
+
+    const fetchSellerReviews = async (sellerId) => {
+      setLoadingReviews(true);
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/customer/seller/${sellerId}/product-reviews/`
+        );
+        console.log(response.data);
+        setReviews(response.data);
+      } catch (error) {
+        console.error(error);
+        message.error("Yorum bilgileri getirilirken bir hata oluştu.");
+      } finally {
+        setLoadingReviews(false);
+      }
     };
-    const fetchSellerReviews = async (id) => {
-      setLoading(true);
-      const response = await axios.get(
-        `http://127.0.0.1:8000/customer/seller/${id}/product-reviews/`
-      );
-      setLoading(false);
-      setReviews(response.data);
-      return response.data;
+
+    const initializeData = async () => {
+      const user = await fetchCurrentUser();
+      if (user) {
+        const sellerId = await fetchSeller(user.id);
+        if (sellerId) {
+          await fetchSellerProducts(sellerId);
+          await fetchSellerReviews(sellerId);
+        }
+      }
     };
-    await fetchCurrentUser();
-    const sellerId = await fetchSeller();
-    await fetchSellerProducts(sellerId);
-    await fetchSellerReviews(sellerId);
+
+    initializeData();
   }, []);
 
   const { TabPane } = Tabs;
-  if (loading) {
+  if (loadingInfo) {
     return (
       <div
         style={{
@@ -94,7 +126,7 @@ export default function ProfilePage() {
         }}
       >
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <p>Satıcı yükleniyor...</p>
+          <p>Profiliniz yükleniyor...</p>
           <ConfigProvider
             theme={{
               components: {
@@ -186,41 +218,99 @@ export default function ProfilePage() {
                       }}
                     >
                       <TabPane tab="Hakkımızda" key="hakkımızda">
-                        <p style={{ marginBottom: "0" }}>
-                          {seller?.description}
-                        </p>
+                        {loadingInfo ? (
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              height: "40vh",
+                              alignItems: "flex-end",
+                            }}
+                          >
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                              }}
+                            >
+                              <p>Profiliniz yükleniyor...</p>
+                              <ConfigProvider
+                                theme={{
+                                  components: {
+                                    Spin: {
+                                      colorPrimary: "#F0CA95",
+                                    },
+                                  },
+                                }}
+                              >
+                                <Spin size="large" />
+                              </ConfigProvider>
+                            </div>
+                          </div>
+                        ) : (
+                          <p style={{ marginBottom: "0" }}>
+                            {seller?.description}
+                          </p>
+                        )}
                       </TabPane>
                       <TabPane tab="Ürünler" key="ürünler">
                         <div style={{ display: "flex", flexWrap: "wrap" }}>
-                          {products?.map((product) => (
-                            <div>
-                              {
-                                <Card
-                                  key={product.id}
-                                  style={{
-                                    width: 200,
-                                    height: 311,
-                                    margin: 16,
-                                    border: "solid 1px lightGray",
+                          {loadingProducts ? (
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                height: "20vh",
+                                width: "100%",
+                                alignItems: "flex-end",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                }}
+                              >
+                                <p>Ürünler yükleniyor...</p>
+                                <ConfigProvider
+                                  theme={{
+                                    components: {
+                                      Spin: {
+                                        colorPrimary: "#F0CA95",
+                                      },
+                                    },
                                   }}
                                 >
-                                  <img
-                                    src="https://img.kwcdn.com/product/Fancyalgo/VirtualModelMatting/39f72400ec0e6d36c17c5a807b148146.jpg?imageMogr2/auto-orient%7CimageView2/2/w/800/q/70/format/webp" // replace with your image path
-                                    alt={product.name}
-                                    style={{
-                                      width: "100%",
-                                      height: "150px",
-                                    }}
-                                  />
-
-                                  <p>{product.name}</p>
-                                  <p>
-                                    {product.unit} - {product.price_per_unit} TL
-                                  </p>
-                                </Card>
-                              }
+                                  <Spin size="large" />
+                                </ConfigProvider>
+                              </div>
                             </div>
-                          ))}
+                          ) : (
+                            products?.map((product) => (
+                              <Card
+                                key={product.id}
+                                style={{
+                                  width: 200,
+                                  height: 311,
+                                  margin: 16,
+                                  border: "solid 1px lightGray",
+                                }}
+                              >
+                                <img
+                                  src="https://img.kwcdn.com/product/Fancyalgo/VirtualModelMatting/39f72400ec0e6d36c17c5a807b148146.jpg" // replace with your image path
+                                  alt={product.name}
+                                  style={{
+                                    width: "100%",
+                                    height: "150px",
+                                  }}
+                                />
+                                <p>{product.name}</p>
+                                <p>
+                                  {product.unit} - {product.price_per_unit} TL
+                                </p>
+                              </Card>
+                            ))
+                          )}
                         </div>
                       </TabPane>
                       <TabPane tab="Değerlendirmeler" key="değerlendirmeler">
@@ -231,11 +321,14 @@ export default function ProfilePage() {
                             flexWrap: "wrap",
                           }}
                         >
-                          {reviews?.map((review) => (
-                            <Card
-                              key={review.id}
+                          {loadingReviews ? (
+                            <div
                               style={{
-                                border: "solid 1px lightGray",
+                                display: "flex",
+                                justifyContent: "center",
+                                height: "20vh",
+                                width: "100%",
+                                alignItems: "flex-end",
                               }}
                             >
                               <div
@@ -244,16 +337,48 @@ export default function ProfilePage() {
                                   flexDirection: "column",
                                 }}
                               >
-                                <div>
-                                  <Rate disabled defaultValue={review.rating} />
-                                </div>
-                                <div>{review.customer}</div>
-                                <div style={{ marginTop: "10px" }}>
-                                  {review.comment}
-                                </div>
+                                <p>Değerlendirmeler yükleniyor...</p>
+                                <ConfigProvider
+                                  theme={{
+                                    components: {
+                                      Spin: {
+                                        colorPrimary: "#F0CA95",
+                                      },
+                                    },
+                                  }}
+                                >
+                                  <Spin size="large" />
+                                </ConfigProvider>
                               </div>
-                            </Card>
-                          ))}
+                            </div>
+                          ) : (
+                            reviews?.map((review) => (
+                              <Card
+                                key={review.id}
+                                style={{
+                                  border: "solid 1px lightGray",
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                  }}
+                                >
+                                  <div>
+                                    <Rate
+                                      disabled
+                                      defaultValue={review.rating}
+                                    />
+                                  </div>
+                                  <div>{review.customer}</div>
+                                  <div style={{ marginTop: "10px" }}>
+                                    {review.comment}
+                                  </div>
+                                </div>
+                              </Card>
+                            ))
+                          )}
                         </div>
                       </TabPane>
                     </Tabs>

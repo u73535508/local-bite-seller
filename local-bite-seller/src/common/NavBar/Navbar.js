@@ -140,6 +140,7 @@ const Navbar = ({ onSearch }) => {
           mode="horizontal"
           selectedKeys={[selectedCategory]}
           defaultSelectedKeys={[""]}
+          overflowedIndicator={false}
           style={{
             alignItems: "center",
             marginBottom: "2rem",

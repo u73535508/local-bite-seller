@@ -44,6 +44,7 @@ const Signup = () => {
             Button: {
               colorPrimary: "#E9AA53",
               colorPrimaryHover: "#ECB76C",
+              colorPrimaryActive: "#E9AA53",
             },
             Checkbox: {
               colorPrimary: "#E9AA53",

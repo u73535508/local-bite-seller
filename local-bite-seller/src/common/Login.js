@@ -36,12 +36,13 @@ const Login = () => {
               colorBorder: "#E9AA53",
               hoverBorderColor: "#F0CA95",
               activeBorderColor: "#F0CA95",
-              colorSuccessBg: "##F0CA95",
+              colorSuccessBg: "#F0CA95",
               colorSuccessBgHover: "red",
             },
             Button: {
               colorPrimary: "#E9AA53",
               colorPrimaryHover: "#ECB76C",
+              colorPrimaryActive: "#E9AA53",
             },
             Checkbox: {
               colorPrimary: "#E9AA53",
