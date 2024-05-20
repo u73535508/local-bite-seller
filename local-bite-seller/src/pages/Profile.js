@@ -122,7 +122,7 @@ export default function ProfilePage() {
   };
 
   const handleNewProduct = () => {
-    navigate("/editProduct/0");
+    navigate(`/editProduct/${seller.id}/0`);
   };
   const { TabPane } = Tabs;
   if (loadingInfo) {

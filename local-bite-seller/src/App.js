@@ -66,7 +66,10 @@ const App = () => {
                   <Route path="/register" element={<Register />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/product/:id" element={<Product />} />
-                  <Route path="/editProduct/:id" element={<EditProduct />} />
+                  <Route
+                    path="/editProduct/:sellerId/:id"
+                    element={<EditProduct />}
+                  />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/seller/:id" element={<Seller />} />
                   <Route path="/updateProfile" element={<UpdateProfile />} />

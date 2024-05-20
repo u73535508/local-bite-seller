@@ -2,7 +2,7 @@ import { PlusOutlined, MinusOutlined } from "@ant-design/icons";
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { Menu, ConfigProvider } from "antd";
+import { Menu, ConfigProvider, Select } from "antd";
 import { HeartOutlined, HeartFilled, StarFilled } from "@ant-design/icons";
 
 import {
@@ -17,15 +17,18 @@ import {
   Avatar,
   Image,
   message,
+  Form,
 } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { WarningContext } from "antd/es/_util/warning";
 
+const { TextArea } = Input;
 const { Title, Text } = Typography;
 const EditProduct = () => {
+  const [form] = Form.useForm();
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { sellerId, id } = useParams();
   console.log(id);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -49,14 +52,58 @@ const EditProduct = () => {
       setQuantity((prevState) => Number(prevState) - 1);
     }
   };
+  const onFinish = async (values) => {
+    let hideLoadingMessage = null;
+    setLoading(true);
+    try {
+      hideLoadingMessage = message.loading("Bilgileriniz güncelleniyor...", 0);
+      let res = "";
+      if (id != 0) {
+        res = await axios.put(
+          `http://127.0.0.1:8000/seller/profile/products/${product.id}/`,
+          { ...values, subcategory: 2, seller: sellerId },
+          {
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+            },
+          }
+        );
+      } else {
+        res = await axios.post(
+          `http://127.0.0.1:8000/seller/profile/products/`,
+          values,
+          {
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+            },
+          }
+        );
+      }
+
+      console.log("res", res);
+      hideLoadingMessage();
+      message.success("Bilgileriniz başarıyla güncellendi.");
+    } catch (error) {
+      console.error(error);
+      message.error("Bilgileriniz güncellenirken bir hata oluştu.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleCatChange = (c) => {
+    form.setFieldValue("category", c);
+  };
   useEffect(() => {
     const fetchProduct = async () => {
+      form.setFieldValue("category", "Kahvaltılık");
+
       try {
         const response = await fetch(
           `http://127.0.0.1:8000/seller/product/${id}`
         );
         const data = await response.json();
-        console.log("product:", data);
+        form.setFieldsValue(data);
+        console.log("product:", data.name);
         setProduct(data);
         return data;
       } catch (error) {
@@ -89,8 +136,13 @@ const EditProduct = () => {
         setLoading(false);
       }
     };
-    if (id && id !== 0) {
+    if (id != 0) {
+      console.log(id);
+      console.log(id && id !== 0);
+
       initializeData();
+    } else {
+      setLoading(false);
     }
   }, [id, token]);
 
@@ -144,14 +196,25 @@ const EditProduct = () => {
     );
   }
 
-  if (!product) {
-    return <p>Ürün bulunamadı!</p>;
-  }
   return (
     <ConfigProvider
       theme={{
         components: {
           Input: {
+            colorBorder: "#E9AA53",
+            hoverBorderColor: "#F0CA95",
+            activeBorderColor: "#F0CA95",
+            colorSuccessBg: "#F0CA95",
+            colorSuccessBgHover: "red",
+          },
+          InputNumber: {
+            colorBorder: "#E9AA53",
+            hoverBorderColor: "#F0CA95",
+            activeBorderColor: "#F0CA95",
+            colorSuccessBg: "#F0CA95",
+            colorSuccessBgHover: "red",
+          },
+          TextArea: {
             colorBorder: "#E9AA53",
             hoverBorderColor: "#F0CA95",
             activeBorderColor: "#F0CA95",
@@ -171,110 +234,175 @@ const EditProduct = () => {
       }}
     >
       <Card
-        key={product.id}
+        key={product?.id}
         style={{
           border: "solid 1px lightGray",
         }}
       >
-        <Row style={{ justifyContent: "space-between", alignItems: "center" }}>
-          <Title style={{ marginLeft: "24px" }} level={2}>
-            {id !== 0 ? (
-              <p>{product.name}</p>
-            ) : (
-              <div>
-                <label>Ürün Adı: </label>
-                <Input name="name" />
-              </div>
-            )}
-          </Title>
-        </Row>
-        <Row
-          style={{
-            padding: "24px",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Col span={6}>
-            <img
-              src="https://img.kwcdn.com/product/Fancyalgo/VirtualModelMatting/39f72400ec0e6d36c17c5a807b148146.jpg?imageMogr2/auto-orient%7CimageView2/2/w/800/q/70/format/webp" // replace with your image path
-              alt={product.name}
-              style={{
-                width: "160px",
-                height: "160px",
-              }}
-            />
-          </Col>
-          <Col span={6}>
-            <Text style={{ fontSize: "16px" }}>
-              <p style={{ fontWeight: "500", marginBottom: "0" }}>
-                Birim Satış:
-              </p>
-              {product.unit}
-            </Text>
-            <br />
-            <Text style={{ fontSize: "16px", fontWeight: "400" }}>
-              <p style={{ fontWeight: "500", marginBottom: "0" }}>Price:</p>{" "}
-              {product.price_per_unit}
-            </Text>
-          </Col>
-
-          <Col
+        <Form layout="vertical" form={form} onFinish={onFinish}>
+          <Row
+            style={{ justifyContent: "space-between", alignItems: "center" }}
+          >
+            <Title style={{ marginLeft: "24px" }} level={2}>
+              <Form.Item
+                label="Ürün Adı"
+                name="name"
+                rules={[
+                  { required: true, message: "Lütfen ürün ismini girin." },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+            </Title>
+          </Row>
+          <Row
             style={{
-              display: "flex",
-              flexDirection: "column",
+              padding: "24px",
+              justifyContent: "space-between",
               alignItems: "center",
             }}
-            span={6}
           >
-            <br />
-            <br />
-            <Row>
-              <div
+            <Col span={6}>
+              <img
+                src="https://img.kwcdn.com/product/Fancyalgo/VirtualModelMatting/39f72400ec0e6d36c17c5a807b148146.jpg?imageMogr2/auto-orient%7CimageView2/2/w/800/q/70/format/webp" // replace with your image path
+                alt={product?.name}
                 style={{
-                  display: "flex",
-                  alignItems: "center",
+                  width: "160px",
+                  height: "160px",
                 }}
+              />
+            </Col>
+            <Col span={6}>
+              <Form.Item
+                label="Birim Satış"
+                name="unit"
+                rules={[
+                  { required: true, message: "Lütfen satış birimi girin." },
+                ]}
               >
-                {sessionStorage.getItem("accessToken") && (
-                  <>
-                    <Button
-                      icon={<MinusOutlined />}
-                      onClick={decreaseQuantity}
-                      disabled={quantity == 1}
-                    />
-                    <Input
-                      style={{ width: "50px" }}
-                      onChange={(e) => setQuantity(e.target.value)}
-                      value={quantity}
-                    />
-                    <Button
-                      icon={<PlusOutlined />}
-                      onClick={increaseQuantity}
-                      disabled={quantity >= product.quantity}
-                    />
-                  </>
-                )}
-              </div>
-            </Row>
+                <Input />
+              </Form.Item>
+              <br />
+              <Form.Item
+                label="Birim Fiyatı"
+                name="price_per_unit"
+                rules={[
+                  { required: true, message: "Lütfen birim fiyatı girin." },
+                ]}
+              >
+                <InputNumber />
+              </Form.Item>
+            </Col>
 
-            <br />
-            {quantity >= product.quantity && (
-              <Typography.Text type="danger">
-                Stok üzerinde miktar girdiniz!
-              </Typography.Text>
-            )}
-          </Col>
-        </Row>
-        <br />
-        <Row>
-          <Title style={{ fontSize: "20px", marginLeft: "24px" }}>
-            Description:
-          </Title>
-        </Row>
-        <Row>
-          <Text style={{ marginLeft: "24px" }}>{product.description}</Text>
-        </Row>
+            <Col
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+              span={6}
+            >
+              <br />
+              <br />
+              <Row>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  {sessionStorage.getItem("accessToken") && (
+                    <>
+                      <Form.Item
+                        label="Stok Miktarı"
+                        name="quantity"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Lütfen stok miktarı girin.",
+                          },
+                        ]}
+                      >
+                        <InputNumber />
+                      </Form.Item>
+                    </>
+                  )}
+                </div>
+              </Row>
+              <Row>
+                <Form.Item
+                  label="Kategori"
+                  name="category"
+                  rules={[
+                    { required: true, message: "Lütfen kategori girin." },
+                  ]}
+                >
+                  <Select
+                    defaultValue="Kahvaltılık"
+                    onChange={handleCatChange}
+                    options={[
+                      {
+                        value: "Sebze",
+                        label: "Sebze",
+                      },
+                      {
+                        value: "Meyve",
+                        label: "Meyve",
+                      },
+                      {
+                        value: "Kuruyemiş",
+                        label: "Kuruyemiş",
+                      },
+                      {
+                        value: "Çay-Kahve",
+                        label: "Çay-Kahve",
+                      },
+                      {
+                        value: "Kahvaltılık",
+                        label: "Kahvaltılık",
+                      },
+                      {
+                        value: "Bakliyat",
+                        label: "Bakliyat",
+                      },
+                      {
+                        value: "Turşu",
+                        label: "Turşu",
+                      },
+                      {
+                        value: "Baharat",
+                        label: "Baharat",
+                      },
+                    ]}
+                  />
+                </Form.Item>
+              </Row>
+
+              <br />
+            </Col>
+          </Row>
+          <br />
+          <Row>
+            <Form.Item
+              label="Ürün Açıklaması"
+              name="description"
+              rules={[
+                { required: true, message: "Lütfen ürün açıklaması girin." },
+              ]}
+            >
+              <TextArea style={{ width: "800px" }} autoSize={{ minRows: 4 }} />
+            </Form.Item>
+          </Row>
+          {id != 0 ? (
+            <Button type="primary" htmlType="submit">
+              Güncelle
+            </Button>
+          ) : (
+            <Button type="primary" htmlType="submit">
+              Ürün Ekle
+            </Button>
+          )}
+        </Form>
       </Card>
     </ConfigProvider>
   );
