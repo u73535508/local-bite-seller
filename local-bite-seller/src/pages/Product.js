@@ -39,7 +39,7 @@ const Product = () => {
   const [isFav, setIsFav] = useState(false);
 
   const navigateToSellerPage = () => {
-    navigate(`/seller/${product.seller}`);
+    navigate(`/seller/${product.seller.id}`);
   };
 
   const increaseQuantity = () => {
@@ -175,6 +175,10 @@ const Product = () => {
     if (reviews.length === 0) return 0;
 
     const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
+    console.log(totalRating);
+    console.log(Math.round(totalRating / reviews.length));
+    console.log(reviews.length);
+
     return Math.round(totalRating / reviews.length);
   };
 
@@ -190,7 +194,7 @@ const Product = () => {
 
       return (
         <div>
-          {stars} <span>({reviews.length})</span>
+          {stars} <span>({averageRating})</span>
         </div>
       );
     }
