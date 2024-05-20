@@ -13,6 +13,8 @@ import Navbar from "./common/NavBar/Navbar";
 import UpdateProfile from "./pages/UpdateProfile";
 import Seller from "./pages/Seller";
 import EditProduct from "./pages/EditProduct";
+import UpdateShopProfile from "./pages/UpdateShopProfile";
+import { ProfileEdit } from "./pages/ProfileEdit";
 
 const { Content, Sider } = Layout;
 
@@ -68,6 +70,11 @@ const App = () => {
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/seller/:id" element={<Seller />} />
                   <Route path="/updateProfile" element={<UpdateProfile />} />
+                  <Route
+                    path="/updateShopProfile"
+                    element={<UpdateShopProfile />}
+                  />
+                  <Route path="/editProfile" element={<ProfileEdit />} />
 
                   {/* <Route path="/buyer/dashboard" element={<BuyerDashboard />} />
                   <Route

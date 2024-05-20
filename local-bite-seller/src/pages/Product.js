@@ -480,9 +480,17 @@ const Product = () => {
               </Button>
             )}
             {quantity >= product.quantity && (
-              <Typography.Text type="danger">
-                Stok üzerinde miktar girdiniz!
-              </Typography.Text>
+              <>
+                {product.quantity === 0 ? (
+                  <Typography.Text type="danger">
+                    Stokta ürün bulunmamaktadır!
+                  </Typography.Text>
+                ) : (
+                  <Typography.Text type="danger">
+                    Stok üzerinde miktar girdiniz!
+                  </Typography.Text>
+                )}
+              </>
             )}
           </Col>
         </Row>

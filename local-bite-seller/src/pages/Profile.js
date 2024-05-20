@@ -21,6 +21,8 @@ import {
   message,
 } from "antd";
 
+import { EditOutlined } from "@ant-design/icons";
+
 export default function ProfilePage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -115,6 +117,10 @@ export default function ProfilePage() {
     initializeData();
   }, []);
 
+  const handleUpdateProfile = () => {
+    navigate("/editProfile");
+  };
+
   const handleNewProduct = () => {
     navigate("/editProduct/0");
   };
@@ -158,10 +164,32 @@ export default function ProfilePage() {
                 itemSelectedColor: "#E9AA53",
                 itemColor: "rgba(0, 0, 0, 0.4)",
               },
+              Input: {
+                colorBorder: "#E9AA53",
+                hoverBorderColor: "#F0CA95",
+                activeBorderColor: "#F0CA95",
+                colorSuccessBg: "#F0CA95",
+                colorSuccessBgHover: "red",
+              },
+              Button: {
+                colorPrimary: "#E9AA53",
+                colorPrimaryHover: "#ECB76C",
+                colorPrimaryActive: "#E9AA53",
+              },
+              Checkbox: {
+                colorPrimary: "#E9AA53",
+                colorPrimaryHover: "#F0CA95",
+              },
             },
           }}
         >
           <Card style={{ border: "solid 1px lightGray" }}>
+            <div style={{ display: "flex", justifyContent: "end" }}>
+              <Button onClick={handleUpdateProfile}>
+                <EditOutlined />
+                Profili Düzenle
+              </Button>
+            </div>
             <div>
               <div
                 style={{
@@ -197,9 +225,6 @@ export default function ProfilePage() {
                     {seller?.brand_contact_no}
                   </p>
                 </div>
-                {/* <Button onClick={navigate("/updateProfile")}>
-                  Profili Düzenle
-                </Button> */}
               </div>
             </div>
           </Card>
