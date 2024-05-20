@@ -72,12 +72,13 @@ const Product = () => {
 
     const fetchSellerData = async (sellerId) => {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/seller`);
+        const response = await fetch(
+          `http://127.0.0.1:8000/seller/${sellerId}`
+        );
         const data = await response.json();
         console.log("sellerData:", data);
-        const seller = data.find((seller) => seller.id === sellerId);
-        console.log("seller:", seller);
-        setSeller(seller);
+        console.log("seller:", response.data);
+        setSeller(response.data);
       } catch (error) {
         console.error("Error fetching seller data:", error);
         message.error("Error fetching seller data. Please try again.");
@@ -135,8 +136,10 @@ const Product = () => {
 
       try {
         const productData = await fetchProduct();
-        await fetchSellerData(productData.seller);
+        console.log(productData);
+        // await fetchSellerData(productData.seller.id);
         // await fetchFavoriteProducts();
+        setSeller(productData.seller);
         await fetchReviews();
       } finally {
         setLoading(false);
@@ -377,7 +380,7 @@ const Product = () => {
               }}
               onClick={navigateToSellerPage}
             >
-              {product.seller}
+              {product.seller.id}
             </Avatar>
             <Title
               style={{ margin: "0", fontSize: "20px", fontWeight: "500" }}

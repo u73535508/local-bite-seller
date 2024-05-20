@@ -334,30 +334,43 @@ export default function ProfilePage() {
                                 </div>
                               </div>
                             ) : (
-                              products?.map((product) => (
-                                <Card
-                                  key={product.id}
-                                  style={{
-                                    width: 200,
-                                    height: 311,
-                                    margin: 16,
-                                    border: "solid 1px lightGray",
-                                  }}
-                                >
-                                  <img
-                                    src="https://img.kwcdn.com/product/Fancyalgo/VirtualModelMatting/39f72400ec0e6d36c17c5a807b148146.jpg" // replace with your image path
-                                    alt={product.name}
-                                    style={{
-                                      width: "100%",
-                                      height: "150px",
-                                    }}
-                                  />
-                                  <p>{product.name}</p>
-                                  <p>
-                                    {product.unit} - {product.price_per_unit} TL
-                                  </p>
-                                </Card>
-                              ))
+                              <>
+                                {!products || products.length === 0 ? (
+                                  <p>Henüz ürün bulunmamaktadır.</p>
+                                ) : (
+                                  <>
+                                    {products.map((product) => (
+                                      <Card
+                                        key={product.id}
+                                        style={{
+                                          width: 200,
+                                          height: 311,
+                                          margin: 16,
+                                          border: "solid 1px lightGray",
+                                        }}
+                                      >
+                                        <img
+                                          src="https://img.kwcdn.com/product/Fancyalgo/VirtualModelMatting/39f72400ec0e6d36c17c5a807b148146.jpg?imageMogr2/auto-orient%7CimageView2/2/w/800/q/70/format/webp" // replace with your image path
+                                          alt={product.name}
+                                          onClick={() =>
+                                            navigate(`/product/${product.id}`)
+                                          }
+                                          style={{
+                                            width: "100%",
+                                            height: "150px",
+                                            cursor: "pointer",
+                                          }}
+                                        />
+                                        <p>{product.name}</p>
+                                        <p>
+                                          {product.unit} -{" "}
+                                          {product.price_per_unit} TL
+                                        </p>
+                                      </Card>
+                                    ))}
+                                  </>
+                                )}
+                              </>
                             )}
                           </div>
                         </div>
