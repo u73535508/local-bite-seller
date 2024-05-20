@@ -28,7 +28,7 @@ const Product = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [reviews, setReviews] = useState([]);
-  const [loadingReviews, setLoadingReviews] = useState(true);
+  // const [loadingReviews, setLoadingReviews] = useState(true);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
@@ -54,7 +54,7 @@ const Product = () => {
     }
   };
   useEffect(() => {
-    console.log(loadingReviews);
+    // console.log(loadingReviews);
     const fetchProduct = async () => {
       try {
         const response = await fetch(
@@ -84,37 +84,37 @@ const Product = () => {
       }
     };
 
-    const fetchFavoriteProducts = async () => {
-      if (!sessionStorage.getItem("accessToken")) {
-        setLoading(false);
-        return;
-      }
+    // const fetchFavoriteProducts = async () => {
+    //   if (!sessionStorage.getItem("accessToken")) {
+    //     setLoading(false);
+    //     return;
+    //   }
 
-      try {
-        const response = await axios.get(
-          "http://127.0.0.1:8000/customer/favitems/",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const favoriteProducts = response.data;
-        console.log("favoriteProducts:", favoriteProducts);
-        const isFavorite = favoriteProducts.find(
-          (product) => product.product.id.toString() === id.toString()
-        );
-        setIsFav(!!isFavorite);
-        console.log("isFavorite:", isFavorite);
-      } catch (error) {
-        console.error("Error fetching favorite products:", error);
-        message.error("Error fetching favorite products. Please try again.");
-      }
-    };
+    //   try {
+    //     const response = await axios.get(
+    //       "http://127.0.0.1:8000/customer/favitems/",
+    //       {
+    //         headers: {
+    //           Authorization: `Bearer ${token}`,
+    //         },
+    //       }
+    //     );
+    //     const favoriteProducts = response.data;
+    //     console.log("favoriteProducts:", favoriteProducts);
+    //     const isFavorite = favoriteProducts.find(
+    //       (product) => product.product.id.toString() === id.toString()
+    //     );
+    //     setIsFav(!!isFavorite);
+    //     console.log("isFavorite:", isFavorite);
+    //   } catch (error) {
+    //     console.error("Error fetching favorite products:", error);
+    //     message.error("Error fetching favorite products. Please try again.");
+    //   }
+    // };
 
     const fetchReviews = async () => {
       try {
-        setLoadingReviews(true);
+        // setLoadingReviews(true);
         const response = await axios.get(
           `http://127.0.0.1:8000/customer/product/${id}/reviews/`
         );
@@ -130,17 +130,17 @@ const Product = () => {
     };
 
     const initializeData = async () => {
-      setLoadingReviews(true);
+      // setLoadingReviews(true);
       setLoading(true);
 
       try {
         const productData = await fetchProduct();
         await fetchSellerData(productData.seller);
-        await fetchFavoriteProducts();
+        // await fetchFavoriteProducts();
         await fetchReviews();
       } finally {
         setLoading(false);
-        setLoadingReviews(false);
+        // setLoadingReviews(false);
       }
     };
 
@@ -295,7 +295,7 @@ const Product = () => {
     // Sepete ekleme işlemi burada yapılır
   };
 
-  if (loading || loadingReviews) {
+  if (loading) {
     return (
       <div
         style={{
@@ -427,7 +427,7 @@ const Product = () => {
             span={6}
           >
             <br />
-            <br />
+            {/* <br />
             <Row>
               <div
                 style={{
@@ -456,8 +456,8 @@ const Product = () => {
                 )}
               </div>
             </Row>
-            <br />
-            {sessionStorage.getItem("accessToken") && (
+            <br /> */}
+            {/* {sessionStorage.getItem("accessToken") && (
               <Button
                 loading={buttonLoading}
                 type="primary"
@@ -491,7 +491,7 @@ const Product = () => {
                   </Typography.Text>
                 )}
               </>
-            )}
+            )} */}
           </Col>
         </Row>
         <br />
@@ -503,10 +503,10 @@ const Product = () => {
         <Row>
           <Text style={{ marginLeft: "24px" }}>{product.description}</Text>
         </Row>
+        <Title level={4}>Yorumlar</Title>
         {reviews.length > 0 && (
           <div style={{ marginTop: "20px" }}>
-            <Title level={4}>Yorumlar</Title>
-            {loadingReviews ? (
+            {loading ? (
               <div
                 style={{
                   display: "flex",
@@ -541,6 +541,7 @@ const Product = () => {
             )}
           </div>
         )}
+        {reviews.length === 0 && <p>Henüz yorum yapılmamıştır.</p>}
       </Card>
     </ConfigProvider>
   );
