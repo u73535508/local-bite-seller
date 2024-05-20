@@ -10,6 +10,7 @@ import Product from "./pages/Product";
 import { SearchBox } from "./common/SearchBox/SearchBox";
 import ProfilePage from "./pages/Profile";
 import Navbar from "./common/NavBar/Navbar";
+import UpdateProfile from "./pages/UpdateProfile";
 
 const { Content, Sider } = Layout;
 
@@ -62,6 +63,8 @@ const App = () => {
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/product/:id" element={<Product />} />
                   <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/updateProfile" element={<UpdateProfile />} />
+
                   {/* <Route path="/buyer/dashboard" element={<BuyerDashboard />} />
                   <Route
                     path="/seller/dashboard"

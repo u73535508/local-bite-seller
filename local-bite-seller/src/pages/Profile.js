@@ -193,6 +193,9 @@ export default function ProfilePage() {
                     {seller?.brand_contact_no}
                   </p>
                 </div>
+                <Button onClick={navigate("/updateProfile")}>
+                  Profili Düzenle
+                </Button>
               </div>
             </div>
           </Card>

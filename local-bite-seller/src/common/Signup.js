@@ -13,7 +13,7 @@ const Signup = () => {
     setLoading(true);
     try {
       await axios.post("http://127.0.0.1:8000/auth/register/", {
-        role: 2,
+        role: 1,
         ...values,
       });
       const res = await axios.post("http://127.0.0.1:8000/auth/login/", {

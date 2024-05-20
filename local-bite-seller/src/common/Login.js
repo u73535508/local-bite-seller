@@ -16,9 +16,13 @@ const Login = () => {
     try {
       const res = await axios.post("http://127.0.0.1:8000/auth/login/", values);
       console.log("res", res.data);
-      login(res.data.access_token, res.data.refresh_token);
-      message.success(`Successfully logged in ${res.data.full_name}`);
-      navigate("/");
+      if (res.data.role !== 1) {
+        message.error("Satıcı hesabı açabilmek için kayıt olun.");
+      } else {
+        login(res.data.access_token, res.data.refresh_token);
+        message.success(`Successfully logged in ${res.data.full_name}`);
+        navigate("/");
+      }
     } catch (error) {
       message.error("Tekrar dene");
       console.error("Error:", error);
