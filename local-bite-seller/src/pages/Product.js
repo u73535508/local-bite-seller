@@ -28,6 +28,7 @@ const Product = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [reviews, setReviews] = useState([]);
+  const [loadingReviews, setLoadingReviews] = useState(true);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
@@ -52,32 +53,45 @@ const Product = () => {
       setQuantity((prevState) => Number(prevState) - 1);
     }
   };
-
   useEffect(() => {
-    let product = {};
-    fetch(`http://127.0.0.1:8000/seller/product/${id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        product = data;
-        console.log("product: ", product);
-        setProduct(data);
-        return fetch(`http://127.0.0.1:8000/seller`);
-      })
-      .then((response) => response.json())
-      .then((sellerData) => {
-        console.log("sellerData", sellerData);
-        const seller = sellerData.find(
-          (seller) => seller.id === product.seller
+    console.log(loadingReviews);
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(
+          `http://127.0.0.1:8000/seller/product/${id}`
         );
-        console.log("seller", seller);
+        const data = await response.json();
+        console.log("product:", data);
+        setProduct(data);
+        return data;
+      } catch (error) {
+        console.error("Error fetching product:", error);
+        message.error("Error fetching product. Please try again.");
+      }
+    };
+
+    const fetchSellerData = async (sellerId) => {
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/seller`);
+        const data = await response.json();
+        console.log("sellerData:", data);
+        const seller = data.find((seller) => seller.id === sellerId);
+        console.log("seller:", seller);
         setSeller(seller);
-      })
-      .then(async () => {
-        if (!sessionStorage.getItem("accessToken")) {
-          setLoading(false);
-          return null;
-        }
-        const favoriteProducts = await axios.get(
+      } catch (error) {
+        console.error("Error fetching seller data:", error);
+        message.error("Error fetching seller data. Please try again.");
+      }
+    };
+
+    const fetchFavoriteProducts = async () => {
+      if (!sessionStorage.getItem("accessToken")) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await axios.get(
           "http://127.0.0.1:8000/customer/favitems/",
           {
             headers: {
@@ -85,28 +99,53 @@ const Product = () => {
             },
           }
         );
-        console.log("favoriteProucts", favoriteProducts);
-        console.log("id", id);
-        const isFavorite = favoriteProducts.data.find(
+        const favoriteProducts = response.data;
+        console.log("favoriteProducts:", favoriteProducts);
+        const isFavorite = favoriteProducts.find(
           (product) => product.product.id.toString() === id.toString()
         );
-        setIsFav(isFavorite);
-        console.log("isFavorite", isFavorite);
-      })
-      .then(async () => {
-        const reviews = await axios.get(
+        setIsFav(!!isFavorite);
+        console.log("isFavorite:", isFavorite);
+      } catch (error) {
+        console.error("Error fetching favorite products:", error);
+        message.error("Error fetching favorite products. Please try again.");
+      }
+    };
+
+    const fetchReviews = async () => {
+      try {
+        setLoadingReviews(true);
+        const response = await axios.get(
           `http://127.0.0.1:8000/customer/product/${id}/reviews/`
         );
-        console.log("reviews", reviews);
-        setReviews(reviews.data);
+        const reviewsData = response.data;
+        console.log("reviews:", reviewsData);
+        setReviews(reviewsData);
+        // setLoadingReviews(false);
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+        // setLoadingReviews(false);
+        message.error("Error fetching reviews. Please try again.");
+      }
+    };
+
+    const initializeData = async () => {
+      setLoadingReviews(true);
+      setLoading(true);
+
+      try {
+        const productData = await fetchProduct();
+        await fetchSellerData(productData.seller);
+        await fetchFavoriteProducts();
+        await fetchReviews();
+      } finally {
         setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        message.error("Tekrar dene.");
-        setLoading(false);
-      });
-  }, [id]);
+        setLoadingReviews(false);
+      }
+    };
+
+    initializeData();
+  }, [id, token]);
 
   const handleAddToCart = async (productId) => {
     let hideLoadingMessage = null;
@@ -256,7 +295,7 @@ const Product = () => {
     // Sepete ekleme işlemi burada yapılır
   };
 
-  if (loading) {
+  if (loading || loadingReviews) {
     return (
       <div
         style={{
@@ -459,7 +498,39 @@ const Product = () => {
         {reviews.length > 0 && (
           <div style={{ marginTop: "20px" }}>
             <Title level={4}>Yorumlar</Title>
-            {renderReviews()}
+            {loadingReviews ? (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  height: "20vh",
+                  width: "100%",
+                  alignItems: "flex-end",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  <p>Değerlendirmeler yükleniyor...</p>
+                  <ConfigProvider
+                    theme={{
+                      components: {
+                        Spin: {
+                          colorPrimary: "#F0CA95",
+                        },
+                      },
+                    }}
+                  >
+                    <Spin size="large" />
+                  </ConfigProvider>
+                </div>
+              </div>
+            ) : (
+              renderReviews()
+            )}
           </div>
         )}
       </Card>

@@ -1,11 +1,10 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import { ConfigProvider, Tabs } from "antd";
-import { useUser } from "../contexts/UserContext";
 import { Rate } from "antd";
 import axios from "axios";
-import { PlusOutlined } from "@ant-design/icons";
 
 import {
   Card,
@@ -20,106 +19,54 @@ import {
   Image,
   message,
 } from "antd";
-
-export default function ProfilePage() {
+export default function Seller() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { currentUser } = useUser();
   const token = sessionStorage.getItem("accessToken");
-  const [loadingInfo, setLoadingInfo] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [loadingReviews, setLoadingReviews] = useState(true);
   const [seller, setSeller] = useState(null);
   const [products, setProducts] = useState(null);
   const [reviews, setReviews] = useState(null);
-  const [favProductIds, setFavProductIds] = useState([]);
-  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const fetchCurrentUser = async () => {
-      setLoadingInfo(true);
-      try {
-        const user = await currentUser();
-        console.log(user);
-        setUser(user);
-        return user;
-      } catch (error) {
-        console.error(error);
-        message.error("Kullanıcı bilgileri getirilirken bir hata oluştu.");
-      }
-      // finally {
-      //   setLoadingInfo(false);
-      // }
+    const fetchSeller = async () => {
+      setLoading(true);
+      const response = await axios.get(`http://127.0.0.1:8000/seller/${id}/`);
+      console.log(response.data);
+      setLoading(false);
+      setSeller(response.data);
+      return response.data;
     };
-
-    const fetchSeller = async (userId) => {
-      // setLoading(true);
-      try {
-        const response = await axios.get(
-          `http://127.0.0.1:8000/seller/user/${userId}/`
-        );
-        console.log(response.data);
-        setSeller(response.data);
-        return response.data.id;
-      } catch (error) {
-        console.error(error);
-        message.error("Satıcı bilgileri getirilirken bir hata oluştu.");
-      } finally {
-        setLoadingInfo(false);
-      }
-    };
-
-    const fetchSellerProducts = async (sellerId) => {
+    const fetchSellerProducts = async () => {
       setLoadingProducts(true);
-      try {
-        const response = await axios.get(
-          `http://127.0.0.1:8000/seller/${sellerId}/products/`
-        );
-        console.log(response.data);
-        setProducts(response.data);
-      } catch (error) {
-        console.error(error);
-        message.error("Ürün bilgileri getirilirken bir hata oluştu.");
-      } finally {
-        setLoadingProducts(false);
-      }
+      const response = await axios.get(
+        `http://127.0.0.1:8000/seller/${id}/products/`
+      );
+      setLoadingProducts(false);
+      setProducts(response.data);
+      return response.data;
     };
-
-    const fetchSellerReviews = async (sellerId) => {
+    const fetchSellerReviews = async () => {
       setLoadingReviews(true);
-      try {
-        const response = await axios.get(
-          `http://127.0.0.1:8000/customer/seller/${sellerId}/product-reviews/`
-        );
-        console.log(response.data);
-        setReviews(response.data);
-      } catch (error) {
-        console.error(error);
-        message.error("Yorum bilgileri getirilirken bir hata oluştu.");
-      } finally {
-        setLoadingReviews(false);
-      }
+      const response = await axios.get(
+        `http://127.0.0.1:8000/customer/seller/${id}/product-reviews/`
+      );
+      setLoadingReviews(false);
+      setReviews(response.data);
+      return response.data;
     };
-
     const initializeData = async () => {
-      const user = await fetchCurrentUser();
-      if (user) {
-        const sellerId = await fetchSeller(user.id);
-        if (sellerId) {
-          await fetchSellerProducts(sellerId);
-          await fetchSellerReviews(sellerId);
-        }
-      }
+      await fetchSellerProducts();
+      await fetchSellerReviews();
     };
-
+    fetchSeller();
     initializeData();
   }, []);
 
-  const handleNewProduct = () => {
-    navigate("/editProduct/0");
-  };
   const { TabPane } = Tabs;
-  if (loadingInfo) {
+  if (loading) {
     return (
       <div
         style={{
@@ -130,7 +77,7 @@ export default function ProfilePage() {
         }}
       >
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <p>Profiliniz yükleniyor...</p>
+          <p>Satıcı yükleniyor...</p>
           <ConfigProvider
             theme={{
               components: {
@@ -197,9 +144,6 @@ export default function ProfilePage() {
                     {seller?.brand_contact_no}
                   </p>
                 </div>
-                {/* <Button onClick={navigate("/updateProfile")}>
-                  Profili Düzenle
-                </Button> */}
               </div>
             </div>
           </Card>
@@ -225,116 +169,78 @@ export default function ProfilePage() {
                       }}
                     >
                       <TabPane tab="Hakkımızda" key="hakkımızda">
-                        {loadingInfo ? (
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              height: "40vh",
-                              alignItems: "flex-end",
-                            }}
-                          >
+                        <p style={{ marginBottom: "0" }}>
+                          {seller?.description}
+                        </p>
+                      </TabPane>
+                      <TabPane tab="Ürünler" key="ürünler">
+                        <div style={{ display: "flex", flexWrap: "wrap" }}>
+                          {loadingProducts ? (
                             <div
                               style={{
                                 display: "flex",
-                                flexDirection: "column",
+                                justifyContent: "center",
+                                height: "20vh",
+                                width: "100%",
+                                alignItems: "flex-end",
                               }}
                             >
-                              <p>Profiliniz yükleniyor...</p>
-                              <ConfigProvider
-                                theme={{
-                                  components: {
-                                    Spin: {
-                                      colorPrimary: "#F0CA95",
-                                    },
-                                  },
-                                }}
-                              >
-                                <Spin size="large" />
-                              </ConfigProvider>
-                            </div>
-                          </div>
-                        ) : (
-                          <p style={{ marginBottom: "0" }}>
-                            {seller?.description}
-                          </p>
-                        )}
-                      </TabPane>
-                      <TabPane tab="Ürünler" key="ürünler">
-                        <div
-                          style={{
-                            dislay: "flex",
-                            flexDirection: "column",
-                            textAlign: "end",
-                          }}
-                        >
-                          <div>
-                            <Button
-                              style={{ textAlign: "end", justifySelf: "end" }}
-                              onClick={handleNewProduct}
-                            >
-                              <PlusOutlined />
-                              Yeni Ürün
-                            </Button>
-                          </div>
-                          <div style={{ display: "flex", flexWrap: "wrap" }}>
-                            {loadingProducts ? (
                               <div
                                 style={{
                                   display: "flex",
-                                  justifyContent: "center",
-                                  height: "20vh",
-                                  width: "100%",
-                                  alignItems: "flex-end",
+                                  flexDirection: "column",
                                 }}
                               >
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    flexDirection: "column",
+                                <p>Ürünler yükleniyor...</p>
+                                <ConfigProvider
+                                  theme={{
+                                    components: {
+                                      Spin: {
+                                        colorPrimary: "#F0CA95",
+                                      },
+                                    },
                                   }}
                                 >
-                                  <p>Ürünler yükleniyor...</p>
-                                  <ConfigProvider
-                                    theme={{
-                                      components: {
-                                        Spin: {
-                                          colorPrimary: "#F0CA95",
-                                        },
-                                      },
+                                  <Spin size="large" />
+                                </ConfigProvider>
+                              </div>
+                            </div>
+                          ) : (
+                            products?.map((product) => (
+                              <div>
+                                {
+                                  <Card
+                                    key={product.id}
+                                    style={{
+                                      width: 200,
+                                      height: 311,
+                                      margin: 16,
+                                      border: "solid 1px lightGray",
                                     }}
                                   >
-                                    <Spin size="large" />
-                                  </ConfigProvider>
-                                </div>
+                                    <img
+                                      src="https://img.kwcdn.com/product/Fancyalgo/VirtualModelMatting/39f72400ec0e6d36c17c5a807b148146.jpg?imageMogr2/auto-orient%7CimageView2/2/w/800/q/70/format/webp" // replace with your image path
+                                      alt={product.name}
+                                      onClick={() =>
+                                        navigate(`/product/${product.id}`)
+                                      }
+                                      style={{
+                                        width: "100%",
+                                        height: "150px",
+                                        cursor: "pointer",
+                                      }}
+                                    />
+
+                                    <p>{product.name}</p>
+                                    <p>
+                                      {product.unit} - {product.price_per_unit}{" "}
+                                      TL
+                                    </p>
+                                  </Card>
+                                }
                               </div>
-                            ) : (
-                              products?.map((product) => (
-                                <Card
-                                  key={product.id}
-                                  style={{
-                                    width: 200,
-                                    height: 311,
-                                    margin: 16,
-                                    border: "solid 1px lightGray",
-                                  }}
-                                >
-                                  <img
-                                    src="https://img.kwcdn.com/product/Fancyalgo/VirtualModelMatting/39f72400ec0e6d36c17c5a807b148146.jpg" // replace with your image path
-                                    alt={product.name}
-                                    style={{
-                                      width: "100%",
-                                      height: "150px",
-                                    }}
-                                  />
-                                  <p>{product.name}</p>
-                                  <p>
-                                    {product.unit} - {product.price_per_unit} TL
-                                  </p>
-                                </Card>
-                              ))
-                            )}
-                          </div>
+                            ))
+                          )}
                         </div>
                       </TabPane>
                       <TabPane tab="Değerlendirmeler" key="değerlendirmeler">
@@ -386,18 +292,58 @@ export default function ProfilePage() {
                                 <div
                                   style={{
                                     display: "flex",
-                                    flexDirection: "column",
+                                    justifyContent: "space-between",
                                   }}
                                 >
-                                  <div>
-                                    <Rate
-                                      disabled
-                                      defaultValue={review.rating}
-                                    />
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "column",
+                                    }}
+                                  >
+                                    <div>
+                                      <Rate
+                                        disabled
+                                        defaultValue={review.rating}
+                                      />
+                                    </div>
+                                    <div style={{ fontWeight: "600" }}>
+                                      {review.user.first_name.slice(0, 2) +
+                                        "*".repeat(
+                                          review.user.first_name.length - 2
+                                        ) +
+                                        " " +
+                                        review.user.last_name.slice(0, 2) +
+                                        "*".repeat(
+                                          review.user.last_name.length - 2
+                                        )}
+                                    </div>
+                                    <div style={{ marginTop: "10px" }}>
+                                      {review.comment}
+                                    </div>
                                   </div>
-                                  <div>{review.customer}</div>
-                                  <div style={{ marginTop: "10px" }}>
-                                    {review.comment}
+                                  <div
+                                    style={{
+                                      marginLeft: "24px",
+                                      display: "flex",
+                                      flexDirection: "column",
+                                    }}
+                                  >
+                                    <img
+                                      src="https://img.kwcdn.com/product/Fancyalgo/VirtualModelMatting/39f72400ec0e6d36c17c5a807b148146.jpg?imageMogr2/auto-orient%7CimageView2/2/w/800/q/70/format/webp" // replace with your image path
+                                      alt={review.product.name}
+                                      onClick={() =>
+                                        navigate(
+                                          `/product/${review.product.id}`
+                                        )
+                                      }
+                                      style={{
+                                        width: "70px",
+                                        height: "70px",
+                                        cursor: "pointer",
+                                      }}
+                                    />
+                                    {review.product.name}
                                   </div>
                                 </div>
                               </Card>

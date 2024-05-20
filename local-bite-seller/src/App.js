@@ -11,6 +11,8 @@ import { SearchBox } from "./common/SearchBox/SearchBox";
 import ProfilePage from "./pages/Profile";
 import Navbar from "./common/NavBar/Navbar";
 import UpdateProfile from "./pages/UpdateProfile";
+import Seller from "./pages/Seller";
+import EditProduct from "./pages/EditProduct";
 
 const { Content, Sider } = Layout;
 
@@ -62,7 +64,9 @@ const App = () => {
                   <Route path="/register" element={<Register />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/product/:id" element={<Product />} />
+                  <Route path="/editProduct/:id" element={<EditProduct />} />
                   <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/seller/:id" element={<Seller />} />
                   <Route path="/updateProfile" element={<UpdateProfile />} />
 
                   {/* <Route path="/buyer/dashboard" element={<BuyerDashboard />} />
