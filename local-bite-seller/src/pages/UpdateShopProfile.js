@@ -5,7 +5,8 @@ import axios from "axios";
 import { useUser } from "../contexts/UserContext";
 import { Spin, ConfigProvider } from "antd";
 
-const UpdateProfile = () => {
+const { TextArea } = Input;
+const UpdateShopProfile = () => {
   const { currentUser } = useUser();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -63,7 +64,7 @@ const UpdateProfile = () => {
     try {
       hideLoadingMessage = message.loading("Bilgileriniz güncelleniyor...", 0);
       const res = await axios.put(
-        "http://127.0.0.1:8000/auth/update-profile/",
+        "http://127.0.0.1:8000/seller/profile/",
         values,
         {
           headers: {
@@ -86,61 +87,112 @@ const UpdateProfile = () => {
     <div
       style={{
         display: "flex",
-        justifyContent: "center",
         flexDirection: "column",
+        width: "100%",
         textAlign: "center",
       }}
     >
-      <h2>Kişisel Bilgileriniz</h2>
-      <div style={{ display: "flex", justifyContent: "center" }}>
-        <ConfigProvider
-          theme={{
-            components: {
-              Input: {
-                colorBorder: "#E9AA53",
-                hoverBorderColor: "#F0CA95",
-                activeBorderColor: "#F0CA95",
-                colorSuccessBg: "#F0CA95",
-                colorSuccessBgHover: "red",
-              },
-              Button: {
-                colorPrimary: "#E9AA53",
-                colorPrimaryHover: "#ECB76C",
-              },
-              Checkbox: {
-                colorPrimary: "#E9AA53",
-                colorPrimaryHover: "#F0CA95",
-              },
+      <h2>Mağaza Bilgileriniz</h2>
+      <ConfigProvider
+        theme={{
+          components: {
+            Input: {
+              colorBorder: "#E9AA53",
+              hoverBorderColor: "#F0CA95",
+              activeBorderColor: "#F0CA95",
+              colorSuccessBg: "#F0CA95",
+              colorSuccessBgHover: "red",
             },
+            TextArea: {
+              colorBorder: "#E9AA53",
+              hoverBorderColor: "#F0CA95",
+              activeBorderColor: "#F0CA95",
+              colorSuccessBg: "#F0CA95",
+              colorSuccessBgHover: "red",
+            },
+            Button: {
+              colorPrimary: "#E9AA53",
+              colorPrimaryHover: "#ECB76C",
+            },
+            Checkbox: {
+              colorPrimary: "#E9AA53",
+              colorPrimaryHover: "#F0CA95",
+            },
+          },
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            columnGap: "120px",
           }}
         >
           <div
-            style={{ display: "flex", flexDirection: "column", width: "500px" }}
+            style={{
+              height: "600px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-around",
+              marginLeft: "20px",
+            }}
           >
+            <div
+              style={{
+                width: "250px",
+                height: "250px",
+                border: "0.5px lightGray solid",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                borderRadius: "15px",
+              }}
+            >
+              <p>Kapak Fotoğrafı ekleyin</p>
+            </div>
+            <div
+              style={{
+                width: "250px",
+                height: "250px",
+                border: "0.5px lightGray solid",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                borderRadius: "15px",
+              }}
+            >
+              <p>Profil Fotoğrafı ekleyin</p>
+            </div>
+          </div>
+
+          <div style={{ width: "500px", marginTop: "20px" }}>
             <Form layout="vertical" form={form} onFinish={onFinish}>
               <Form.Item
-                label="İsim"
-                name="first_name"
-                rules={[{ required: true, message: "Lütfen isminizi girin." }]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                label="Soyisim"
-                name="last_name"
+                label="Mağaza İsmi"
+                name="brand_name"
                 rules={[
-                  { required: true, message: "Lütfen soyisminizi girin." },
+                  { required: true, message: "Lütfen mağaza ismini girin." },
                 ]}
               >
                 <Input />
               </Form.Item>
               <Form.Item
+                label="Hakkımızda"
+                name="description"
+                rules={[
+                  { required: true, message: "Lütfen soyisminizi girin." },
+                ]}
+              >
+                <TextArea />
+              </Form.Item>
+              <Form.Item
                 label="E-posta"
-                name="email"
+                name="brand_email"
                 rules={[
                   {
                     required: true,
-                    message: "Lütfen e-posta adresinizi girin.",
+                    message: "Lütfen bir e-posta adresi girin.",
                   },
                 ]}
               >
@@ -148,7 +200,31 @@ const UpdateProfile = () => {
               </Form.Item>
               <Form.Item
                 label="Telefon Numarası"
-                name="phone_number"
+                name="brand_contact_no"
+                rules={[
+                  {
+                    required: true,
+                    message: "Lütfen telefon numaranızı girin.",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                label="latitude"
+                name="latitude"
+                rules={[
+                  {
+                    required: true,
+                    message: "Lütfen telefon numaranızı girin.",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                label="longitude"
+                name="longitude"
                 rules={[
                   {
                     required: true,
@@ -165,10 +241,10 @@ const UpdateProfile = () => {
               </Form.Item>
             </Form>
           </div>
-        </ConfigProvider>
-      </div>
+        </div>
+      </ConfigProvider>
     </div>
   );
 };
 
-export default UpdateProfile;
+export default UpdateShopProfile;

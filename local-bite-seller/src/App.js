@@ -11,6 +11,8 @@ import { SearchBox } from "./common/SearchBox/SearchBox";
 import ProfilePage from "./pages/Profile";
 import Navbar from "./common/NavBar/Navbar";
 import UpdateProfile from "./pages/UpdateProfile";
+import UpdateShopProfile from "./pages/UpdateShopProfile";
+import { ProfileEdit } from "./pages/ProfileEdit";
 
 const { Content, Sider } = Layout;
 
@@ -64,6 +66,11 @@ const App = () => {
                   <Route path="/product/:id" element={<Product />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/updateProfile" element={<UpdateProfile />} />
+                  <Route
+                    path="/updateShopProfile"
+                    element={<UpdateShopProfile />}
+                  />
+                  <Route path="/editProfile" element={<ProfileEdit />} />
 
                   {/* <Route path="/buyer/dashboard" element={<BuyerDashboard />} />
                   <Route
