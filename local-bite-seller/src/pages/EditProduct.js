@@ -37,41 +37,33 @@ const EditProduct = () => {
   const [buttonLoading, setButtonLoading] = useState(false);
   const token = sessionStorage.getItem("accessToken");
 
-  const navigateToSellerPage = () => {
-    navigate(`/seller/${product.seller}`);
-  };
-
-  const increaseQuantity = () => {
-    if (quantity < product.quantity) {
-      setQuantity((prevState) => Number(prevState) + 1);
-    }
-  };
-
-  const decreaseQuantity = () => {
-    if (quantity > 1) {
-      setQuantity((prevState) => Number(prevState) - 1);
-    }
-  };
   const onFinish = async (values) => {
     let hideLoadingMessage = null;
     setLoading(true);
+    console.log(seller);
     try {
       hideLoadingMessage = message.loading("Bilgileriniz güncelleniyor...", 0);
       let res = "";
       if (id != 0) {
+        let formData = new FormData();
+        Object.keys(values).forEach((key) => formData.append(key, values[key]));
+        formData.append("subcategory", 2);
+        // formData.append("seller", seller.id);
+
         res = await axios.put(
           `http://127.0.0.1:8000/seller/profile/products/${product.id}/`,
-          { ...values, subcategory: 2, seller: sellerId },
+          formData,
           {
             headers: {
               Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+              "Content-Type": "multipart/form-data",
             },
           }
         );
       } else {
         res = await axios.post(
           `http://127.0.0.1:8000/seller/profile/products/`,
-          values,
+          { ...values, subcategory: 2, seller: seller },
           {
             headers: {
               Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
@@ -119,7 +111,6 @@ const EditProduct = () => {
         console.log("sellerData:", data);
         const seller = data.find((seller) => seller.id === sellerId);
         console.log("seller:", seller);
-        setSeller(seller);
       } catch (error) {
         console.error("Error fetching seller data:", error);
         message.error("Error fetching seller data. Please try again.");
@@ -132,6 +123,8 @@ const EditProduct = () => {
       try {
         const productData = await fetchProduct();
         await fetchSellerData(productData.seller);
+        setSeller(productData.seller);
+        console.log(productData);
       } finally {
         setLoading(false);
       }
@@ -382,16 +375,18 @@ const EditProduct = () => {
             </Col>
           </Row>
           <br />
-          <Row>
-            <Form.Item
-              label="Ürün Açıklaması"
-              name="description"
-              rules={[
-                { required: true, message: "Lütfen ürün açıklaması girin." },
-              ]}
-            >
-              <TextArea style={{ width: "800px" }} autoSize={{ minRows: 4 }} />
-            </Form.Item>
+          <Row style={{ width: "100%" }}>
+            <div style={{ width: "100%" }}>
+              <Form.Item
+                label="Ürün Açıklaması"
+                name="description"
+                rules={[
+                  { required: true, message: "Lütfen ürün açıklaması girin." },
+                ]}
+              >
+                <TextArea autoSize={{ minRows: 4 }} />
+              </Form.Item>
+            </div>
           </Row>
           {id != 0 ? (
             <Button type="primary" htmlType="submit">

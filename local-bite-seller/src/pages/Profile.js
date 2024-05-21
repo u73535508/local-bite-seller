@@ -124,6 +124,9 @@ export default function ProfilePage() {
   const handleNewProduct = () => {
     navigate(`/editProduct/${seller.id}/0`);
   };
+  const handleEditProduct = (id) => {
+    navigate(`/editProduct/${seller.id}/${id}`);
+  };
   const { TabPane } = Tabs;
   if (loadingInfo) {
     return (
@@ -366,6 +369,20 @@ export default function ProfilePage() {
                                           {product.unit} -{" "}
                                           {product.price_per_unit} TL
                                         </p>
+                                        <div>
+                                          <Button
+                                            style={{
+                                              textAlign: "end",
+                                              justifySelf: "end",
+                                            }}
+                                            onClick={() =>
+                                              handleEditProduct(product.id)
+                                            }
+                                          >
+                                            <EditOutlined />
+                                            Düzenle
+                                          </Button>
+                                        </div>
                                       </Card>
                                     ))}
                                   </>
