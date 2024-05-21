@@ -2,8 +2,15 @@ import { PlusOutlined, MinusOutlined } from "@ant-design/icons";
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../contexts/UserContext";
 import { Menu, ConfigProvider } from "antd";
-import { HeartOutlined, HeartFilled, StarFilled } from "@ant-design/icons";
+import {
+  HeartOutlined,
+  HeartFilled,
+  StarFilled,
+  StarOutlined,
+} from "@ant-design/icons";
+import { EditOutlined } from "@ant-design/icons";
 
 import {
   Card,
@@ -27,32 +34,64 @@ const { Title, Text } = Typography;
 const Product = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { currentUser } = useUser();
   const [reviews, setReviews] = useState([]);
-  // const [loadingReviews, setLoadingReviews] = useState(true);
+  const [loadingInfo, setLoadingInfo] = useState(true);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [quantity, setQuantity] = useState(1);
   const [seller, setSeller] = useState({});
-  const [buttonLoading, setButtonLoading] = useState(false);
-  const [favLoading, setFavLoading] = useState(false);
+  const [currentSeller, setCurrentSeller] = useState({});
   const token = sessionStorage.getItem("accessToken");
-  const [isFav, setIsFav] = useState(false);
+  const [user, setUser] = useState(null);
 
   const navigateToSellerPage = () => {
     navigate(`/seller/${product.seller}`);
   };
 
-  const increaseQuantity = () => {
-    if (quantity < product.quantity) {
-      setQuantity((prevState) => Number(prevState) + 1);
-    }
-  };
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      setLoadingInfo(true);
+      try {
+        const user = await currentUser();
+        console.log(user);
+        setUser(user);
+        return user;
+      } catch (error) {
+        console.error(error);
+        message.error("Kullanıcı bilgileri getirilirken bir hata oluştu.");
+      }
+      // finally {
+      //   setLoadingInfo(false);
+      // }
+    };
 
-  const decreaseQuantity = () => {
-    if (quantity > 1) {
-      setQuantity((prevState) => Number(prevState) - 1);
-    }
-  };
+    const fetchCurrentSeller = async (userId) => {
+      // setLoading(true);
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/seller/user/${userId}/`
+        );
+        console.log(response.data);
+        setCurrentSeller(response.data);
+        return response.data.id;
+      } catch (error) {
+        console.error(error);
+        message.error("Satıcı bilgileri getirilirken bir hata oluştu.");
+      } finally {
+        setLoadingInfo(false);
+      }
+    };
+
+    const initializeData = async () => {
+      const user = await fetchCurrentUser();
+      if (user) {
+        const sellerId = await fetchCurrentSeller(user.id);
+      }
+    };
+
+    initializeData();
+  }, []);
+
   useEffect(() => {
     // console.log(loadingReviews);
     const fetchProduct = async () => {
@@ -84,34 +123,6 @@ const Product = () => {
         message.error("Error fetching seller data. Please try again.");
       }
     };
-
-    // const fetchFavoriteProducts = async () => {
-    //   if (!sessionStorage.getItem("accessToken")) {
-    //     setLoading(false);
-    //     return;
-    //   }
-
-    //   try {
-    //     const response = await axios.get(
-    //       "http://127.0.0.1:8000/customer/favitems/",
-    //       {
-    //         headers: {
-    //           Authorization: `Bearer ${token}`,
-    //         },
-    //       }
-    //     );
-    //     const favoriteProducts = response.data;
-    //     console.log("favoriteProducts:", favoriteProducts);
-    //     const isFavorite = favoriteProducts.find(
-    //       (product) => product.product.id.toString() === id.toString()
-    //     );
-    //     setIsFav(!!isFavorite);
-    //     console.log("isFavorite:", isFavorite);
-    //   } catch (error) {
-    //     console.error("Error fetching favorite products:", error);
-    //     message.error("Error fetching favorite products. Please try again.");
-    //   }
-    // };
 
     const fetchReviews = async () => {
       try {
@@ -150,27 +161,10 @@ const Product = () => {
     initializeData();
   }, [id, token]);
 
-  const handleAddToCart = async (productId) => {
-    let hideLoadingMessage = null;
-    try {
-      hideLoadingMessage = message.loading("Sepete ekleniyor...", 0);
-      await axios.post(
-        "http://127.0.0.1:8000/customer/cartitems/",
-        { product_id: id, quantity: quantity },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      hideLoadingMessage();
-      message.success("Sepete eklendi!!!");
-    } catch (error) {
-      console.error("Error:", error);
-      if (hideLoadingMessage) hideLoadingMessage();
-      message.error("Tekrar dene");
-    }
+  const handleEditProduct = (id) => {
+    navigate(`/editProduct/${seller.id}/${id}`);
   };
+
   const calculateAverageRating = () => {
     if (reviews.length === 0) return 0;
 
@@ -190,6 +184,9 @@ const Product = () => {
 
       for (let i = 0; i < averageRating; i++) {
         stars.push(<StarFilled key={i} style={{ color: "#FFD700" }} />);
+      }
+      for (let i = 0; i < 5 - averageRating; i++) {
+        stars.push(<StarOutlined key={i} style={{ color: "#FFD700" }} />);
       }
 
       return (
@@ -217,6 +214,9 @@ const Product = () => {
             {Array.from({ length: review.rating }).map((_, i) => (
               <StarFilled key={i} style={{ color: "#FFD700" }} />
             ))}
+            {Array.from({ length: 5 - review.rating }).map((_, i) => (
+              <StarOutlined key={i} style={{ color: "#FFD700" }} />
+            ))}
           </Col>
         </Row>
         <Row justify="end">
@@ -228,78 +228,6 @@ const Product = () => {
         <hr />
       </div>
     ));
-  };
-  const addToFavorite = async () => {
-    let hideLoadingMessage = null;
-    try {
-      hideLoadingMessage = message.loading("Favorilere ekleniyor...", 0);
-      setFavLoading(true);
-      // const res = await axios.post("http://127.0.0.1:8000/auth/login/");
-      if (!sessionStorage.getItem("accessToken")) {
-        navigate("/register");
-      } else {
-        await axios.post(
-          "http://127.0.0.1:8000/customer/favitems/",
-          { product: id },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-      }
-      hideLoadingMessage();
-      setIsFav(true);
-      message.success("Ürün favorilere eklendi.");
-    } catch (error) {
-      message.error("Ürün favorilere eklenirken bir hata oluştu.");
-      console.error("Error:", error);
-    }
-    setFavLoading(false);
-    // Sepete ekleme işlemi burada yapılır
-  };
-  const removeFromFavorite = async () => {
-    let hideLoadingMessage = null;
-    try {
-      hideLoadingMessage = message.loading("Favorilerden çıkarılıyor...", 0);
-      setFavLoading(true);
-      // const res = await axios.post("http://127.0.0.1:8000/auth/login/");
-      if (!sessionStorage.getItem("accessToken")) {
-        navigate("/register");
-      } else {
-        await axios.delete(`http://127.0.0.1:8000/customer/favitems/delete/`, {
-          data: { product_id: id },
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-      }
-      hideLoadingMessage();
-      setIsFav(false);
-      message.success("Ürün favorilerden çıkarıldı.");
-    } catch (error) {
-      message.error("Ürün favorilerden çıkarılırken bir hata oluştu.");
-      console.error("Error:", error);
-    }
-    setFavLoading(false);
-    // Sepete ekleme işlemi burada yapılır
-  };
-
-  const addToCart = async () => {
-    try {
-      setButtonLoading(true);
-      // const res = await axios.post("http://127.0.0.1:8000/auth/login/");
-      if (!sessionStorage.getItem("accessToken")) {
-        navigate("/register");
-      } else {
-        await handleAddToCart();
-      }
-    } catch (error) {
-      message.error("Ürün sepete eklenirken bir hata oluştu.");
-      console.error("Error:", error);
-    }
-    setButtonLoading(false);
-    // Sepete ekleme işlemi burada yapılır
   };
 
   if (loading) {
@@ -427,13 +355,30 @@ const Product = () => {
 
           <Col
             style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
+              display: "grid",
+              alignSelf: "end",
             }}
             span={6}
           >
             <br />
+
+            {currentSeller?.id === product?.seller && (
+              <div
+                style={{
+                  display: "flex",
+                  justifySelf: "end",
+                  marginBottom: "14px",
+                }}
+              >
+                <Button
+                  style={{}}
+                  onClick={() => handleEditProduct(product.id)}
+                >
+                  <EditOutlined />
+                  Düzenle
+                </Button>
+              </div>
+            )}
             {/* <br />
             <Row>
               <div
