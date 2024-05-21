@@ -77,7 +77,7 @@ const App = () => {
                     path="/updateShopProfile"
                     element={<UpdateShopProfile />}
                   />
-                  <Route path="/editProfile" element={<ProfileEdit />} />
+                  <Route path="/editProfile/:id" element={<ProfileEdit />} />
 
                   {/* <Route path="/buyer/dashboard" element={<BuyerDashboard />} />
                   <Route

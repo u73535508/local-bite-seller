@@ -4,9 +4,10 @@ import { Button, Form, Input, message } from "antd";
 import axios from "axios";
 import { useUser } from "../contexts/UserContext";
 import { Spin, ConfigProvider } from "antd";
+import { useParams } from "react-router-dom";
 
 const { TextArea } = Input;
-const UpdateShopProfile = () => {
+const UpdateShopProfile = ({ sellerId }) => {
   const { currentUser } = useUser();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -14,23 +15,20 @@ const UpdateShopProfile = () => {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    setFetchingInfos(true);
-    const fetchCurrentUser = async () => {
-      try {
-        const user = await currentUser();
-        setUser(user);
-        form.setFieldsValue(user);
-      } catch (error) {
-        console.error(error);
-        message.error("Kullanıcı bilgileri getirilirken bir hata oluştu.");
-      } finally {
-        setFetchingInfos(false);
-      }
+    const fetchSeller = async () => {
+      setLoading(true);
+      const response = await axios.get(
+        `http://127.0.0.1:8000/seller/${sellerId}/`
+      );
+      console.log(response.data);
+      setUser(response.data);
+      form.setFieldsValue(response.data);
+      setLoading(false);
+      return response.data;
     };
 
-    fetchCurrentUser();
+    fetchSeller();
   }, []);
-
   if (fetchingInfos) {
     return (
       <div
@@ -82,7 +80,33 @@ const UpdateShopProfile = () => {
       setLoading(false);
     }
   };
-
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          height: "40vh",
+          alignItems: "flex-end",
+        }}
+      >
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <p>Bilgileriniz yükleniyor...</p>
+          <ConfigProvider
+            theme={{
+              components: {
+                Spin: {
+                  colorPrimary: "#F0CA95",
+                },
+              },
+            }}
+          >
+            <Spin size="large" />
+          </ConfigProvider>
+        </div>
+      </div>
+    );
+  }
   return (
     <div
       style={{

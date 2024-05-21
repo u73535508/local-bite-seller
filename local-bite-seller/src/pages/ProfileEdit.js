@@ -2,9 +2,12 @@ import React from "react";
 import { Tabs, ConfigProvider } from "antd";
 import UpdateProfile from "./UpdateProfile";
 import UpdateShopProfile from "./UpdateShopProfile";
+import { useParams } from "react-router-dom";
 
 const { TabPane } = Tabs;
 export const ProfileEdit = () => {
+  const { id } = useParams();
+
   return (
     <div style={{ margin: "auto" }}>
       <ConfigProvider
@@ -25,7 +28,7 @@ export const ProfileEdit = () => {
             <UpdateProfile />
           </TabPane>
           <TabPane tab="Mağaza Bilgilerini Güncelleyin" key="shop">
-            <UpdateShopProfile />
+            <UpdateShopProfile sellerId={id} />
           </TabPane>
         </Tabs>
       </ConfigProvider>
