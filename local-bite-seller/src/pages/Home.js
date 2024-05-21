@@ -134,50 +134,6 @@ const Home = ({ searchText }) => {
       </div>
     );
   }
-  const handleDislike = async (productId) => {
-    let hideLoadingMessage = null;
-    try {
-      hideLoadingMessage = message.loading("Favorilerden çıkarılıyor...", 0);
-      await axios.delete(`http://127.0.0.1:8000/customer/favitems/delete/`, {
-        data: { product_id: productId },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      hideLoadingMessage();
-      message.success("Favorilerden çıkarıldı!");
-      setFavProductIds((prevState) =>
-        prevState.filter((favProductId) => favProductId !== productId)
-      );
-    } catch (error) {
-      console.error("Error:", error);
-      if (hideLoadingMessage) hideLoadingMessage();
-      message.error("Tekrar dene");
-    }
-  };
-
-  const handleLike = async (productId) => {
-    let hideLoadingMessage = null;
-    try {
-      hideLoadingMessage = message.loading("Favorilere ekleniyor...", 0);
-      await axios.post(
-        "http://127.0.0.1:8000/customer/favitems/",
-        { product: productId },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      hideLoadingMessage();
-      message.success("Favorilere eklendi!");
-      setFavProductIds((prevState) => [...prevState, productId]);
-    } catch (error) {
-      console.error("Error:", error);
-      if (hideLoadingMessage) hideLoadingMessage();
-      message.error("Tekrar dene");
-    }
-  };
 
   const toggleChatBox = () => {
     setIsChatBoxVisible(!isChatBoxVisible);
@@ -207,23 +163,6 @@ const Home = ({ searchText }) => {
               <p>
                 {product.unit} - {product.price_per_unit} TL
               </p>
-              {token && (
-                <div
-                  onClick={() => {
-                    if (favProductIds.includes(product.id)) {
-                      handleDislike(product.id);
-                    } else {
-                      handleLike(product.id);
-                    }
-                  }}
-                >
-                  {favProductIds.includes(product.id) ? (
-                    <HeartFilled style={{ cursor: "pointer" }} />
-                  ) : (
-                    <HeartOutlined style={{ cursor: "pointer" }} />
-                  )}
-                </div>
-              )}
             </Card>
           ))
         ) : (

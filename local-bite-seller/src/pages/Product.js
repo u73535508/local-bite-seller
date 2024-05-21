@@ -39,7 +39,7 @@ const Product = () => {
   const [isFav, setIsFav] = useState(false);
 
   const navigateToSellerPage = () => {
-    navigate(`/seller/${product.seller.id}`);
+    navigate(`/seller/${product.seller}`);
   };
 
   const increaseQuantity = () => {
@@ -78,7 +78,7 @@ const Product = () => {
         const data = await response.json();
         console.log("sellerData:", data);
         console.log("seller:", response.data);
-        setSeller(response.data);
+        setSeller(data);
       } catch (error) {
         console.error("Error fetching seller data:", error);
         message.error("Error fetching seller data. Please try again.");
@@ -137,9 +137,9 @@ const Product = () => {
       try {
         const productData = await fetchProduct();
         console.log(productData);
-        // await fetchSellerData(productData.seller.id);
+        await fetchSellerData(productData.seller);
         // await fetchFavoriteProducts();
-        setSeller(productData.seller);
+        // setSeller(productData.seller);
         await fetchReviews();
       } finally {
         setLoading(false);
@@ -390,7 +390,7 @@ const Product = () => {
               style={{ margin: "0", fontSize: "20px", fontWeight: "500" }}
               level={2}
             >
-              {seller.brand_name}
+              {seller?.brand_name}
             </Title>
           </div>
         </Row>
