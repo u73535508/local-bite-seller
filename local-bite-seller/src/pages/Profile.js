@@ -117,7 +117,7 @@ export default function ProfilePage() {
   }, []);
 
   const handleUpdateProfile = () => {
-    navigate("/editProfile");
+    navigate(`/editProfile/${seller.id}`);
   };
 
   const { TabPane } = Tabs;
@@ -380,32 +380,78 @@ export default function ProfilePage() {
                               </div>
                             </div>
                           ) : (
-                            reviews?.map((review) => (
-                              <Card
-                                key={review.id}
-                                style={{
-                                  border: "solid 1px lightGray",
-                                }}
-                              >
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                  }}
-                                >
-                                  <div>
-                                    <Rate
-                                      disabled
-                                      defaultValue={review.rating}
-                                    />
-                                  </div>
-                                  <div>{review.customer}</div>
-                                  <div style={{ marginTop: "10px" }}>
-                                    {review.comment}
-                                  </div>
-                                </div>
-                              </Card>
-                            ))
+                            <>
+                              {!reviews || reviews.length === 0 ? (
+                                <p>Henüz değerlendirme yapılmamıştır.</p>
+                              ) : (
+                                reviews?.map((review) => (
+                                  <Card
+                                    key={review.id}
+                                    style={{
+                                      border: "solid 1px lightGray",
+                                    }}
+                                  >
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                      }}
+                                    >
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          flexDirection: "column",
+                                        }}
+                                      >
+                                        <div>
+                                          <Rate
+                                            disabled
+                                            defaultValue={review.rating}
+                                          />
+                                        </div>
+                                        <div style={{ fontWeight: "600" }}>
+                                          {review.user.first_name.slice(0, 2) +
+                                            "*".repeat(
+                                              review.user.first_name.length - 2
+                                            ) +
+                                            " " +
+                                            review.user.last_name.slice(0, 2) +
+                                            "*".repeat(
+                                              review.user.last_name.length - 2
+                                            )}
+                                        </div>
+                                        <div style={{ marginTop: "10px" }}>
+                                          {review.comment}
+                                        </div>
+                                      </div>
+                                      <div
+                                        style={{
+                                          marginLeft: "24px",
+                                          display: "flex",
+                                          flexDirection: "column",
+                                        }}
+                                      >
+                                        <img
+                                          src="https://img.kwcdn.com/product/Fancyalgo/VirtualModelMatting/39f72400ec0e6d36c17c5a807b148146.jpg?imageMogr2/auto-orient%7CimageView2/2/w/800/q/70/format/webp" // replace with your image path
+                                          alt={review.product.name}
+                                          onClick={() =>
+                                            navigate(
+                                              `/product/${review.product.id}`
+                                            )
+                                          }
+                                          style={{
+                                            width: "70px",
+                                            height: "70px",
+                                            cursor: "pointer",
+                                          }}
+                                        />
+                                        {review.product.name}
+                                      </div>
+                                    </div>
+                                  </Card>
+                                ))
+                              )}
+                            </>
                           )}
                         </div>
                       </TabPane>
