@@ -1,34 +1,50 @@
-import React from "react";
-import { useEffect, useState } from "react";
-import { Button, Form, Input, message } from "antd";
+import React, { useEffect, useState, useRef } from "react";
+import {
+  Button,
+  Form,
+  Input,
+  message,
+  Spin,
+  ConfigProvider,
+  Upload,
+} from "antd";
 import axios from "axios";
 import { useUser } from "../contexts/UserContext";
-import { Spin, ConfigProvider } from "antd";
-import { useParams } from "react-router-dom";
+import { UploadOutlined } from "@ant-design/icons";
 
 const { TextArea } = Input;
+
 const UpdateShopProfile = ({ sellerId }) => {
   const { currentUser } = useUser();
+  const fileInputRef = useRef();
+  const fileInputRef2 = useRef();
+
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [fetchingInfos, setFetchingInfos] = useState(false);
   const [form] = Form.useForm();
+  const [file, setFile] = useState(null);
+  const [file2, setFile2] = useState(null);
 
   useEffect(() => {
     const fetchSeller = async () => {
       setLoading(true);
-      const response = await axios.get(
-        `http://127.0.0.1:8000/seller/${sellerId}/`
-      );
-      console.log(response.data);
-      setUser(response.data);
-      form.setFieldsValue(response.data);
-      setLoading(false);
-      return response.data;
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/seller/${sellerId}/`
+        );
+        setUser(response.data);
+        form.setFieldsValue(response.data);
+      } catch (error) {
+        console.error("Failed to fetch seller data", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchSeller();
-  }, []);
+  }, [sellerId, form]);
+
   if (fetchingInfos) {
     return (
       <div
@@ -42,13 +58,7 @@ const UpdateShopProfile = ({ sellerId }) => {
         <div style={{ display: "flex", flexDirection: "column" }}>
           <p>Bilgileriniz yükleniyor...</p>
           <ConfigProvider
-            theme={{
-              components: {
-                Spin: {
-                  colorPrimary: "#F0CA95",
-                },
-              },
-            }}
+            theme={{ components: { Spin: { colorPrimary: "#F0CA95" } } }}
           >
             <Spin size="large" />
           </ConfigProvider>
@@ -56,30 +66,56 @@ const UpdateShopProfile = ({ sellerId }) => {
       </div>
     );
   }
+
   const onFinish = async (values) => {
-    let hideLoadingMessage = null;
     setLoading(true);
+    const formData = new FormData();
+    if (file) {
+      formData.append("photo", file);
+      // formData.append("cover_photo", file2);
+    }
+    for (const key in values) {
+      if (values[key] instanceof FileList) {
+        formData.append(key, values[key][0]);
+      } else {
+        formData.append(key, values[key]);
+      }
+    }
+
+    // Log formData entries
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ": " + pair[1]);
+    }
+
     try {
-      hideLoadingMessage = message.loading("Bilgileriniz güncelleniyor...", 0);
-      const res = await axios.put(
-        "http://127.0.0.1:8000/seller/profile/",
-        values,
-        {
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
-          },
-        }
+      const hideLoadingMessage = message.loading(
+        "Bilgileriniz güncelleniyor...",
+        0
       );
-      console.log("res", res);
+      await axios.put("http://127.0.0.1:8000/seller/profile/", formData, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+          "Content-Type": "multipart/form-data", // Ensure correct content type
+        },
+      });
       hideLoadingMessage();
       message.success("Bilgileriniz başarıyla güncellendi.");
     } catch (error) {
-      console.error(error);
+      console.error("Error updating seller profile", error);
       message.error("Bilgileriniz güncellenirken bir hata oluştu.");
     } finally {
-      setLoading(false);
+      // setLoading(false);
+      window.location.reload();
     }
   };
+
+  const onFileChange = (event) => {
+    setFile(event.target.files[0]);
+  };
+  const onFileChange2 = (event) => {
+    setFile2(event.target.files[0]);
+  };
+
   if (loading) {
     return (
       <div
@@ -93,13 +129,7 @@ const UpdateShopProfile = ({ sellerId }) => {
         <div style={{ display: "flex", flexDirection: "column" }}>
           <p>Bilgileriniz yükleniyor...</p>
           <ConfigProvider
-            theme={{
-              components: {
-                Spin: {
-                  colorPrimary: "#F0CA95",
-                },
-              },
-            }}
+            theme={{ components: { Spin: { colorPrimary: "#F0CA95" } } }}
           >
             <Spin size="large" />
           </ConfigProvider>
@@ -107,6 +137,7 @@ const UpdateShopProfile = ({ sellerId }) => {
       </div>
     );
   }
+
   return (
     <div
       style={{
@@ -124,74 +155,122 @@ const UpdateShopProfile = ({ sellerId }) => {
               colorBorder: "#E9AA53",
               hoverBorderColor: "#F0CA95",
               activeBorderColor: "#F0CA95",
-              colorSuccessBg: "#F0CA95",
-              colorSuccessBgHover: "red",
             },
             TextArea: {
               colorBorder: "#E9AA53",
               hoverBorderColor: "#F0CA95",
               activeBorderColor: "#F0CA95",
-              colorSuccessBg: "#F0CA95",
-              colorSuccessBgHover: "red",
             },
-            Button: {
-              colorPrimary: "#E9AA53",
-              colorPrimaryHover: "#ECB76C",
-            },
-            Checkbox: {
-              colorPrimary: "#E9AA53",
-              colorPrimaryHover: "#F0CA95",
-            },
+            Button: { colorPrimary: "#E9AA53", colorPrimaryHover: "#ECB76C" },
+            Checkbox: { colorPrimary: "#E9AA53", colorPrimaryHover: "#F0CA95" },
           },
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "center",
-            columnGap: "120px",
-          }}
+        <Form
+          layout="vertical"
+          form={form}
+          onFinish={onFinish}
+          encType="multipart/form-data" // Ensure form uses multipart/form-data encoding
         >
           <div
             style={{
-              height: "600px",
               display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-around",
-              marginLeft: "20px",
+              flexDirection: "row",
+              justifyContent: "center",
+              columnGap: "120px",
             }}
           >
+            {/* <div
+              style={{
+                height: "600px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-around",
+                marginLeft: "20px",
+              }}
+            > */}
+            {/* <div
+                style={{
+                  width: "250px",
+                  height: "250px",
+                  border: "0.5px lightGray solid",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderRadius: "15px",
+                  padding: "0 10px",
+                }}
+              >
+                <label>Kapak Fotoğrafı:</label>
+                <img
+                  style={{ marginTop: "20px" }}
+                  src={user?.cover_photo}
+                  width="160px"
+                  height="160px"
+                />
+                <Form.Item
+                  name="cover_photo"
+                  valuePropName="fileList"
+                  getValueFromEvent={(e) => {
+                    // Ensure the file is handled correctly
+                    if (Array.isArray(e)) {
+                      return e;
+                    }
+                    return e && e.fileList;
+                  }}
+                >
+                  <Input
+                    type="file"
+                    accept="image/*;capture=camera"
+                    onChange={onFileChange2}
+                    ref={fileInputRef2}
+                  />
+                </Form.Item>
+              </div> */}
             <div
               style={{
+                marginTop: "50px",
                 width: "250px",
                 height: "250px",
                 border: "0.5px lightGray solid",
                 display: "flex",
+                flexDirection: "column",
                 justifyContent: "center",
                 alignItems: "center",
                 borderRadius: "15px",
+                padding: "0 10px",
               }}
             >
-              <p>Kapak Fotoğrafı ekleyin</p>
+              <label>Profil Fotoğrafı:</label>
+              <img
+                style={{ marginTop: "20px" }}
+                src={user?.photo}
+                width="160px"
+                height="160px"
+              />
+              <Form.Item
+                name="photo"
+                valuePropName="fileList"
+                getValueFromEvent={(e) => {
+                  // Ensure the file is handled correctly
+                  if (Array.isArray(e)) {
+                    return e;
+                  }
+                  return e && e.fileList;
+                }}
+              >
+                <Input
+                  type="file"
+                  accept="image/*;capture=camera"
+                  onChange={onFileChange}
+                  ref={fileInputRef}
+                />
+              </Form.Item>
+              {/* </div> */}
             </div>
-            <div
-              style={{
-                width: "250px",
-                height: "250px",
-                border: "0.5px lightGray solid",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                borderRadius: "15px",
-              }}
-            >
-              <p>Profil Fotoğrafı ekleyin</p>
-            </div>
-          </div>
 
-          <div style={{ width: "500px", marginTop: "20px" }}>
-            <Form layout="vertical" form={form} onFinish={onFinish}>
+            <div style={{ width: "500px", marginTop: "20px" }}>
               <Form.Item
                 label="Mağaza İsmi"
                 name="brand_name"
@@ -204,9 +283,7 @@ const UpdateShopProfile = ({ sellerId }) => {
               <Form.Item
                 label="Hakkımızda"
                 name="description"
-                rules={[
-                  { required: true, message: "Lütfen soyisminizi girin." },
-                ]}
+                rules={[{ required: true, message: "Lütfen açıklama girin." }]}
               >
                 <TextArea />
               </Form.Item>
@@ -235,26 +312,16 @@ const UpdateShopProfile = ({ sellerId }) => {
                 <Input />
               </Form.Item>
               <Form.Item
-                label="latitude"
+                label="Enlem"
                 name="latitude"
-                rules={[
-                  {
-                    required: true,
-                    message: "Lütfen telefon numaranızı girin.",
-                  },
-                ]}
+                rules={[{ required: true, message: "Lütfen enlem girin." }]}
               >
                 <Input />
               </Form.Item>
               <Form.Item
-                label="longitude"
+                label="Boylam"
                 name="longitude"
-                rules={[
-                  {
-                    required: true,
-                    message: "Lütfen telefon numaranızı girin.",
-                  },
-                ]}
+                rules={[{ required: true, message: "Lütfen boylam girin." }]}
               >
                 <Input />
               </Form.Item>
@@ -263,9 +330,9 @@ const UpdateShopProfile = ({ sellerId }) => {
                   Güncelle
                 </Button>
               </Form.Item>
-            </Form>
+            </div>
           </div>
-        </div>
+        </Form>
       </ConfigProvider>
     </div>
   );
