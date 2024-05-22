@@ -15,6 +15,7 @@ import Seller from "./pages/Seller";
 import EditProduct from "./pages/EditProduct";
 import UpdateShopProfile from "./pages/UpdateShopProfile";
 import { ProfileEdit } from "./pages/ProfileEdit";
+import { Orders } from "./pages/Orders";
 
 const { Content, Sider } = Layout;
 
@@ -78,6 +79,7 @@ const App = () => {
                     element={<UpdateShopProfile />}
                   />
                   <Route path="/editProfile/:id" element={<ProfileEdit />} />
+                  <Route path="/orders/:sellerId" element={<Orders />} />
 
                   {/* <Route path="/buyer/dashboard" element={<BuyerDashboard />} />
                   <Route
