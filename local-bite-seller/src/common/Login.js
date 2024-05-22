@@ -20,7 +20,9 @@ const Login = () => {
         message.error("Satıcı hesabı açabilmek için kayıt olun.");
       } else {
         login(res.data.access_token, res.data.refresh_token);
-        message.success(`Successfully logged in ${res.data.full_name}`);
+        message.success(
+          `${res.data.full_name} olarak başarıyla giriş yapıldı `
+        );
         navigate("/");
       }
     } catch (error) {
@@ -55,7 +57,7 @@ const Login = () => {
           },
         }}
       >
-        <h2>Login</h2>
+        <h2>Giriş Yap</h2>
         <Form
           name="login"
           onFinish={onFinish}
@@ -68,7 +70,7 @@ const Login = () => {
               {
                 required: true,
                 type: "email",
-                message: "Please input a valid email!",
+                message: "Lütfen geçerli bir email giriniz!",
               },
             ]}
           >
@@ -77,25 +79,27 @@ const Login = () => {
 
           <Form.Item
             name="password"
-            rules={[{ required: true, message: "Please input your password!" }]}
+            rules={[
+              { required: true, message: "Lütfen geçerli bir şifre giriniz!" },
+            ]}
           >
-            <Input.Password placeholder="Password" />
+            <Input.Password placeholder="Şifre" />
           </Form.Item>
 
           <Form.Item name="remember" valuePropName="checked">
-            <Checkbox>Remember me</Checkbox>
+            <Checkbox>Beni Hatırla</Checkbox>
           </Form.Item>
 
           <Form.Item>
             <Button type="primary" htmlType="submit" loading={loading}>
-              Login
+              Giriş Yap
             </Button>
           </Form.Item>
 
           <Form.Item>
             <Space>
               <Link className={classes.link} to="/forgot-password">
-                Forgot Password
+                Şifremi Unuttum
               </Link>
             </Space>
           </Form.Item>

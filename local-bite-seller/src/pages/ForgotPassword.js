@@ -8,7 +8,9 @@ export default function ForgotPassword() {
   const onFinish = (values) => {
     setLoading(true);
     // Burada normalde backend ile iletişim kurulacak, ancak şu aşamada sadece mesaj gösterilecek.
-    message.success(`Email sent to ${values.email} for password reset.`);
+    message.success(
+      `${values.email} adresine şifre yenileme maili gönderildi.`
+    );
     setLoading(false);
   };
 
@@ -31,18 +33,18 @@ export default function ForgotPassword() {
           },
         }}
       >
-        <h2>Forgot Password</h2>
+        <h2>Şifremi Unuttum</h2>
         <Form name="forgotPassword" onFinish={onFinish} size="large">
           <Form.Item
             name="email"
-            rules={[{ required: true, message: "Please input your email!" }]}
+            rules={[{ required: true, message: "Lütfen email giriniz!" }]}
           >
             <Input type="email" placeholder="Email" />
           </Form.Item>
 
           <Form.Item>
             <Button type="primary" htmlType="submit" loading={loading}>
-              Send Reset Email
+              Şifremi Yenile
             </Button>
           </Form.Item>
         </Form>

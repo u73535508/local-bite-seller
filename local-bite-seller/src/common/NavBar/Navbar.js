@@ -218,7 +218,7 @@ const Navbar = ({ onSearch }) => {
                 icon={<ShoppingOutlined />}
                 onClick={() => navigate(`/orders/${user.id}`)}
               >
-                Siparişlerim
+                Siparişler
               </Menu.Item>
               <Menu.Item
                 key="logout"

@@ -21,10 +21,10 @@ export default function Register() {
         }}
       >
         <Tabs defaultActiveKey="login" centered>
-          <TabPane tab="Login" key="login">
+          <TabPane tab="Giriş Yap" key="login">
             <Login />
           </TabPane>
-          <TabPane tab="Signup" key="signup">
+          <TabPane tab="Üye Ol" key="signup">
             <Signup />
           </TabPane>
         </Tabs>

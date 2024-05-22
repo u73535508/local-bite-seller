@@ -21,7 +21,7 @@ const Signup = () => {
         password: values.password,
       });
       login(res.data.access_token, res.data.refresh_token);
-      message.success(`User ${values.first_name} successfully registered.`);
+      message.success(`${values.first_name} başarıyla üye olundu.`);
       navigate("/");
     } catch (error) {
       message.error("Tekrar dene");
@@ -53,7 +53,7 @@ const Signup = () => {
           },
         }}
       >
-        <h2>Sign Up</h2>
+        <h2>Üye Ol</h2>
         <Form name="signup" onFinish={onFinish} size="large">
           <Form.Item
             name="first_name"
@@ -83,7 +83,7 @@ const Signup = () => {
               {
                 required: true,
                 type: "email",
-                message: "Please input a valid email!",
+                message: "Lütfen geçerli bir email giriniz!",
               },
             ]}
           >
@@ -92,22 +92,24 @@ const Signup = () => {
 
           <Form.Item
             name="password"
-            rules={[{ required: true, message: "Please input your password!" }]}
+            rules={[
+              { required: true, message: "Lütfen geçerli bir şifre giriniz!" },
+            ]}
           >
-            <Input.Password placeholder="Password" />
+            <Input.Password placeholder="Şifre" />
           </Form.Item>
           <Form.Item
             name="password2"
             rules={[
-              { required: true, message: "Please input your password again!" },
+              { required: true, message: "Lütfen şifrenizi tekrar giriniz!" },
             ]}
           >
-            <Input.Password placeholder="Password again" />
+            <Input.Password placeholder="Şifre tekrar" />
           </Form.Item>
 
           <Form.Item>
             <Button type="primary" htmlType="submit" loading={loading}>
-              Sign Up
+              Üye Ol
             </Button>
           </Form.Item>
         </Form>
