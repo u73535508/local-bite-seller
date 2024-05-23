@@ -71,14 +71,18 @@ const UpdateShopProfile = ({ sellerId }) => {
     setLoading(true);
     const formData = new FormData();
     if (file) {
-      formData.append("photo", file);
+      // formData.append("photo", file);
       // formData.append("cover_photo", file2);
     }
     for (const key in values) {
       if (values[key] instanceof FileList) {
-        formData.append(key, values[key][0]);
+        if (key !== "photo") {
+          formData.append(key, values[key][0]);
+        }
       } else {
-        formData.append(key, values[key]);
+        if (key !== "photo") {
+          formData.append(key, values[key]);
+        }
       }
     }
 
@@ -105,7 +109,7 @@ const UpdateShopProfile = ({ sellerId }) => {
       message.error("Bilgileriniz güncellenirken bir hata oluştu.");
     } finally {
       // setLoading(false);
-      window.location.reload();
+      // window.location.reload();
     }
   };
 
