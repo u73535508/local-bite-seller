@@ -11,6 +11,7 @@ import {
 import axios from "axios";
 import { useUser } from "../contexts/UserContext";
 import { UploadOutlined } from "@ant-design/icons";
+import TomTomMap from './TomTomMap';
 
 const { TextArea } = Input;
 
@@ -22,6 +23,8 @@ const UpdateShopProfile = ({ sellerId }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [fetchingInfos, setFetchingInfos] = useState(false);
+  const [latitude, setLatitude] = useState(0);
+  const [longitude, setLongitude] = useState(0);
   const [form] = Form.useForm();
   const [file, setFile] = useState(null);
   const [file2, setFile2] = useState(null);
@@ -329,6 +332,15 @@ const UpdateShopProfile = ({ sellerId }) => {
               >
                 <Input />
               </Form.Item>
+                <TomTomMap
+                    latitude={latitude}
+                    longitude={longitude}
+                    onLocationChange={({ latitude, longitude }) => {
+                    setLatitude(latitude);
+                    setLongitude(longitude);
+                    form.setFieldsValue({ latitude, longitude });
+                }}
+                />
               <Form.Item>
                 <Button type="primary" htmlType="submit" loading={loading}>
                   Güncelle
