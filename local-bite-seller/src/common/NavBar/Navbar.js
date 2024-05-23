@@ -2,7 +2,8 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Menu, ConfigProvider } from "antd";
+import { Menu, ConfigProvider, message } from "antd";
+import axios from "axios";
 import {
   LockOutlined,
   HomeOutlined,
@@ -24,20 +25,39 @@ const Navbar = ({ onSearch }) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
+  const [seller, setSeller] = useState(null);
   const { logout, currentUser } = useUser();
   const selectedCategory = useSelector((state) => state.category);
   useEffect(() => {
     const fetchCurrentUser = async () => {
       setLoading(true);
-      const user = await currentUser();
-      console.log(user);
-      setUser(user);
-      setLoading(false);
+      try {
+        const user = await currentUser();
+        console.log(user);
+        setUser(user);
+        await fetchSeller(user.id); // Wait for fetchSeller to complete
+      } catch (error) {
+        console.error("Kullanıcı bilgisi alınamadı.", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchCurrentUser();
   }, [currentUser]);
 
+  const fetchSeller = async (userId) => {
+    try {
+      const response = await axios.get(
+        `http://127.0.0.1:8000/seller/user/${userId}/`
+      );
+      console.log(response.data);
+      setSeller(response.data);
+    } catch (error) {
+      console.error("Satıcı bilgisi alınamadı.", error);
+      message.error("Satıcı bilgileri getirilirken bir hata oluştu.");
+    }
+  };
   const handleLogoClick = () => {
     dispatch(setCategory(""));
     window.location.href = "/";
@@ -58,12 +78,6 @@ const Navbar = ({ onSearch }) => {
   };
   const handleSearch = (text) => {
     onSearch(text);
-  };
-  const goToBasketPage = () => {
-    if (!sessionStorage.getItem("accessToken")) {
-      navigate("/register");
-    }
-    navigate(`/basket/${user.id}`);
   };
   const handleLogin = () => {
     dispatch(setCategory(""));
@@ -104,6 +118,32 @@ const Navbar = ({ onSearch }) => {
             fontSize: "11px",
           }}
         >
+          <a key="hakkımızda" onClick={() => handleCategoryClick("hakkımızda")}>
+            HAKKIMIZDA
+          </a>
+          <a
+            key="iletişim"
+            onClick={() => handleCategoryClick("iletişim")}
+            style={{ marginLeft: "1rem", marginRight: "16px" }}
+          >
+            İLETİŞİM
+          </a>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <label
+            className={classes.logo}
+            style={{}}
+            onClick={() => handleLogoClick()}
+          >
+            LOCALBITE
+          </label>
+          <SearchBox onSearch={(searchText) => handleSearch(searchText)} />
           <a
             key="map"
             onClick={() => navigate("/map")}
@@ -123,16 +163,6 @@ const Navbar = ({ onSearch }) => {
           >
             Harita
           </a>
-          <a key="hakkımızda" onClick={() => handleCategoryClick("hakkımızda")}>
-            HAKKIMIZDA
-          </a>
-          <a
-            key="iletişim"
-            onClick={() => handleCategoryClick("iletişim")}
-            style={{ marginLeft: "1rem", marginRight: "16px" }}
-          >
-            İLETİŞİM
-          </a>
         </div>
 
         <Menu
@@ -145,17 +175,18 @@ const Navbar = ({ onSearch }) => {
             alignItems: "center",
             marginBottom: "2rem",
             marginTop: "10px",
-            justifyContent: "space-between",
+            justifyContent: "flex-end",
+            width: "75vw",
           }}
         >
-          <label
+          {/* <label
             className={classes.logo}
             style={{}}
             onClick={() => handleLogoClick()}
           >
             LOCALBITE
           </label>
-          <SearchBox onSearch={(searchText) => handleSearch(searchText)} />
+          <SearchBox onSearch={(searchText) => handleSearch(searchText)} /> */}
 
           {!sessionStorage.getItem("accessToken") && (
             <Menu.Item
@@ -178,13 +209,6 @@ const Navbar = ({ onSearch }) => {
                 justifyContent: "space-between",
               }}
             >
-              {/* <Menu.Item
-                key="basket"
-                icon={<ShoppingCartOutlined />}
-                onClick={goToBasketPage}
-              >
-                Sepetim
-              </Menu.Item> */}
               <Menu.Item
                 key="info"
                 icon={<InfoCircleOutlined />}
@@ -199,24 +223,11 @@ const Navbar = ({ onSearch }) => {
               >
                 Adreslerim
               </Menu.Item> */}
-              {/* <Menu.Item
-                key="favorites"
-                icon={<HeartOutlined />}
-                onClick={handleFavProductsClick}
-              >
-                Favori Ürünlerim
-              </Menu.Item> */}
-              {/* <Menu.Item
-                key="vendors"
-                icon={<UserOutlined />}
-                onClick={() => navigate(`/favoriteVendors/${user.id}`)}
-              >
-                Favori Satıcılarım
-              </Menu.Item> */}
+
               <Menu.Item
                 key="orders"
                 icon={<ShoppingOutlined />}
-                onClick={() => navigate(`/orders/${user.id}`)}
+                onClick={() => navigate(`/orders/${seller.id}`)}
               >
                 Siparişler
               </Menu.Item>
