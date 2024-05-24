@@ -11,7 +11,7 @@ import {
 import axios from "axios";
 import { useUser } from "../contexts/UserContext";
 import { UploadOutlined } from "@ant-design/icons";
-import TomTomMap from './TomTomMap';
+import TomTomMap from "./TomTomMap";
 
 const { TextArea } = Input;
 
@@ -21,13 +21,14 @@ const UpdateShopProfile = ({ sellerId }) => {
   const fileInputRef2 = useRef();
 
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [fetchingInfos, setFetchingInfos] = useState(false);
   const [latitude, setLatitude] = useState(0);
   const [longitude, setLongitude] = useState(0);
   const [form] = Form.useForm();
   const [file, setFile] = useState(null);
   const [file2, setFile2] = useState(null);
+  const [photoUpdated, setPhotoUpdated] = useState(false);
 
   useEffect(() => {
     const fetchSeller = async () => {
@@ -73,18 +74,22 @@ const UpdateShopProfile = ({ sellerId }) => {
   const onFinish = async (values) => {
     setLoading(true);
     const formData = new FormData();
-    if (file) {
-      // formData.append("photo", file);
+    if (photoUpdated && file) {
+      formData.append("photo", file);
       // formData.append("cover_photo", file2);
     }
     for (const key in values) {
       if (values[key] instanceof FileList) {
-        if (key !== "photo") {
-          formData.append(key, values[key][0]);
+        if (!photoUpdated) {
+          if (key !== "photo") {
+            formData.append(key, values[key][0]);
+          }
         }
       } else {
-        if (key !== "photo") {
-          formData.append(key, values[key]);
+        if (!photoUpdated) {
+          if (key !== "photo") {
+            formData.append(key, values[key]);
+          }
         }
       }
     }
@@ -111,12 +116,13 @@ const UpdateShopProfile = ({ sellerId }) => {
       console.error("Error updating seller profile", error);
       message.error("Bilgileriniz güncellenirken bir hata oluştu.");
     } finally {
-      // setLoading(false);
+      setLoading(false);
       // window.location.reload();
     }
   };
 
   const onFileChange = (event) => {
+    setPhotoUpdated(true);
     setFile(event.target.files[0]);
   };
   const onFileChange2 = (event) => {
@@ -274,7 +280,6 @@ const UpdateShopProfile = ({ sellerId }) => {
                   ref={fileInputRef}
                 />
               </Form.Item>
-              {/* </div> */}
             </div>
 
             <div style={{ width: "500px", marginTop: "20px" }}>
@@ -332,15 +337,15 @@ const UpdateShopProfile = ({ sellerId }) => {
               >
                 <Input />
               </Form.Item>
-                <TomTomMap
-                    latitude={latitude}
-                    longitude={longitude}
-                    onLocationChange={({ latitude, longitude }) => {
-                    setLatitude(latitude);
-                    setLongitude(longitude);
-                    form.setFieldsValue({ latitude, longitude });
+              <TomTomMap
+                latitude={latitude}
+                longitude={longitude}
+                onLocationChange={({ latitude, longitude }) => {
+                  setLatitude(latitude);
+                  setLongitude(longitude);
+                  form.setFieldsValue({ latitude, longitude });
                 }}
-                />
+              />
               <Form.Item>
                 <Button type="primary" htmlType="submit" loading={loading}>
                   Güncelle

@@ -8,7 +8,7 @@ import { Spin, ConfigProvider } from "antd";
 const UpdateProfile = () => {
   const { currentUser } = useUser();
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [fetchingInfos, setFetchingInfos] = useState(false);
   const [form] = Form.useForm();
 

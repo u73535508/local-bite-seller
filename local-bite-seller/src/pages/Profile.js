@@ -21,7 +21,7 @@ import {
   message,
 } from "antd";
 
-import { EditOutlined } from "@ant-design/icons";
+import { EditOutlined, UserOutlined } from "@ant-design/icons";
 
 export default function ProfilePage() {
   const { id } = useParams();
@@ -202,14 +202,18 @@ export default function ProfilePage() {
                 }}
               >
                 <div style={{ width: "160px", height: "160px" }}>
-                  <img
-                    src="https://img.kwcdn.com/product/Fancyalgo/VirtualModelMatting/39f72400ec0e6d36c17c5a807b148146.jpg?imageMogr2/auto-orient%7CimageView2/2/w/800/q/70/format/webp" // replace with your image path
-                    // alt={seller.brand_name}
-                    style={{
-                      cursor: "pointer",
-                      width: "100%",
-                    }}
-                  />
+                  {seller?.photo !== null ? (
+                    <img
+                      src={seller?.photo}
+                      // alt={seller.brand_name}
+                      style={{
+                        cursor: "pointer",
+                        width: "100%",
+                      }}
+                    />
+                  ) : (
+                    <UserOutlined style={{ fontSize: "78px" }} />
+                  )}
                 </div>
                 <div
                   style={{
@@ -352,18 +356,22 @@ export default function ProfilePage() {
                                           border: "solid 1px lightGray",
                                         }}
                                       >
-                                        <img
-                                          src="https://img.kwcdn.com/product/Fancyalgo/VirtualModelMatting/39f72400ec0e6d36c17c5a807b148146.jpg?imageMogr2/auto-orient%7CimageView2/2/w/800/q/70/format/webp" // replace with your image path
-                                          alt={product.name}
-                                          onClick={() =>
-                                            navigate(`/product/${product.id}`)
-                                          }
-                                          style={{
-                                            width: "100%",
-                                            height: "150px",
-                                            cursor: "pointer",
-                                          }}
-                                        />
+                                        {product?.photos !== null ? (
+                                          <img
+                                            src={product.photos} // replace with your image path
+                                            alt={product.name}
+                                            onClick={() =>
+                                              navigate(`/product/${product.id}`)
+                                            }
+                                            style={{
+                                              width: "100%",
+                                              height: "150px",
+                                              cursor: "pointer",
+                                            }}
+                                          />
+                                        ) : (
+                                          <UserOutlined />
+                                        )}
                                         <p>{product.name}</p>
                                         <p>
                                           {product.unit} -{" "}

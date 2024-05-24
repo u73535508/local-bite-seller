@@ -1,5 +1,5 @@
 import { PlusOutlined, MinusOutlined } from "@ant-design/icons";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Menu, ConfigProvider, Select } from "antd";
@@ -27,28 +27,55 @@ const { TextArea } = Input;
 const { Title, Text } = Typography;
 const EditProduct = () => {
   const [form] = Form.useForm();
+  const fileInputRef = useRef();
   const navigate = useNavigate();
   const { sellerId, id } = useParams();
+  const [photoUpdated, setPhotoUpdated] = useState(false);
   console.log(id);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
+  const [file, setFile] = useState(null);
   const [seller, setSeller] = useState({});
   const [buttonLoading, setButtonLoading] = useState(false);
   const token = sessionStorage.getItem("accessToken");
 
+  const onFileChange = (event) => {
+    setPhotoUpdated(true);
+    setFile(event.target.files[0]);
+  };
   const onFinish = async (values) => {
+    let res = "";
     let hideLoadingMessage = null;
     setLoading(true);
     console.log(seller);
     try {
       hideLoadingMessage = message.loading("Bilgileriniz güncelleniyor...", 0);
-      let res = "";
       if (id != 0) {
+        console.log("ıms");
         let formData = new FormData();
-        Object.keys(values).forEach((key) => formData.append(key, values[key]));
-        formData.append("subcategory", 2);
+        if (photoUpdated && file) {
+          formData.append("photos", file);
+          console.log("photo appended");
+          // formData.append("cover_photo", file2);
+        }
+        Object.keys(values).forEach((key) => {
+          console.log(key);
+          if (values[key] instanceof FileList) {
+            if (!photoUpdated) {
+              if (key !== "photos") {
+                formData.append(key, values[key][0]);
+              }
+            }
+          } else {
+            if (key !== "photos") {
+              formData.append(key, values[key]);
+            }
+          }
+        });
+        formData.append("subcategory", 1);
         // formData.append("seller", seller.id);
+        console.log(formData);
 
         res = await axios.put(
           `http://127.0.0.1:8000/seller/profile/products/${product.id}/`,
@@ -63,7 +90,7 @@ const EditProduct = () => {
       } else {
         res = await axios.post(
           `http://127.0.0.1:8000/seller/profile/products/`,
-          { ...values, subcategory: 2, seller: seller },
+          { ...values, subcategory: 1, seller: seller },
           {
             headers: {
               Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
@@ -79,6 +106,13 @@ const EditProduct = () => {
       console.error(error);
       message.error("Bilgileriniz güncellenirken bir hata oluştu.");
     } finally {
+      console.log("res: ", res);
+      if (id === "0") {
+        const _id = res.data.id;
+        navigate(`/editProduct/${sellerId}/${_id}`);
+      } else {
+        // window.location.reload();
+      }
       setLoading(false);
     }
   };
@@ -256,14 +290,46 @@ const EditProduct = () => {
             }}
           >
             <Col span={6}>
-              <img
-                src="https://img.kwcdn.com/product/Fancyalgo/VirtualModelMatting/39f72400ec0e6d36c17c5a807b148146.jpg?imageMogr2/auto-orient%7CimageView2/2/w/800/q/70/format/webp" // replace with your image path
-                alt={product?.name}
+              <div
                 style={{
-                  width: "160px",
-                  height: "160px",
+                  marginTop: "50px",
+                  width: "250px",
+                  height: "250px",
+                  border: "0.5px lightGray solid",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderRadius: "15px",
+                  padding: "0 10px",
                 }}
-              />
+              >
+                <label>Ürün Fotoğrafı:</label>
+                <img
+                  style={{ marginTop: "20px" }}
+                  src={product?.photos}
+                  width="160px"
+                  height="160px"
+                />
+                <Form.Item
+                  name="photos"
+                  valuePropName="fileList"
+                  getValueFromEvent={(e) => {
+                    // Ensure the file is handled correctly
+                    if (Array.isArray(e)) {
+                      return e;
+                    }
+                    return e && e.fileList;
+                  }}
+                >
+                  <Input
+                    type="file"
+                    accept="image/*;capture=camera"
+                    onChange={onFileChange}
+                    ref={fileInputRef}
+                  />
+                </Form.Item>
+              </div>
             </Col>
             <Col span={6}>
               <Form.Item
