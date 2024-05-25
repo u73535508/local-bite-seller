@@ -21,7 +21,7 @@ import {
   message,
 } from "antd";
 
-import { EditOutlined, UserOutlined } from "@ant-design/icons";
+import { EditOutlined, UserOutlined, DeleteOutlined } from "@ant-design/icons";
 
 export default function ProfilePage() {
   const { id } = useParams();
@@ -36,7 +36,44 @@ export default function ProfilePage() {
   const [reviews, setReviews] = useState(null);
   const [favProductIds, setFavProductIds] = useState([]);
   const [user, setUser] = useState(null);
-
+  const [buttonLoading, setButtonLoading] = useState(false);
+  const deleteProduct = async (product) => {
+    console.log("product: ", product);
+    try {
+      setButtonLoading(true);
+      if (!sessionStorage.getItem("accessToken")) {
+        navigate("/register");
+      } else {
+        await handleDelete(product);
+      }
+    } catch (error) {
+      message.error("Bir hata oluştu.");
+      console.error("Error:", error);
+    }
+    navigate("/profile");
+    setButtonLoading(false);
+  };
+  const handleDelete = async (product) => {
+    let hideLoadingMessage = null;
+    try {
+      hideLoadingMessage = message.loading("Ürün siliniyor...", 0);
+      await axios.delete(
+        `http://127.0.0.1:8000/seller/profile/products/${product.id}/`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      hideLoadingMessage();
+      message.success("Sepetten silindi!");
+      window.location.reload();
+    } catch (error) {
+      console.error("Error:", error);
+      if (hideLoadingMessage) hideLoadingMessage();
+      message.error("Tekrar dene");
+    }
+  };
   useEffect(() => {
     const fetchCurrentUser = async () => {
       setLoadingInfo(true);
@@ -377,7 +414,13 @@ export default function ProfilePage() {
                                           {product.unit} -{" "}
                                           {product.price_per_unit} TL
                                         </p>
-                                        <div>
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            flexDirection: "row",
+                                            gap: "20px",
+                                          }}
+                                        >
                                           <Button
                                             style={{
                                               textAlign: "end",
@@ -390,6 +433,25 @@ export default function ProfilePage() {
                                             <EditOutlined />
                                             Düzenle
                                           </Button>
+                                          <ConfigProvider
+                                            theme={{
+                                              components: {
+                                                Button: {
+                                                  colorPrimary: "#e34b4b",
+                                                  colorPrimaryHover: "#f56464",
+                                                },
+                                              },
+                                            }}
+                                          >
+                                            <Button
+                                              type="primary"
+                                              onClick={() =>
+                                                deleteProduct(product)
+                                              }
+                                              icon={<DeleteOutlined />}
+                                              disabled={buttonLoading}
+                                            ></Button>
+                                          </ConfigProvider>
                                         </div>
                                       </Card>
                                     ))}

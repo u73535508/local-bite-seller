@@ -3,7 +3,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Menu, ConfigProvider, Select } from "antd";
-import { HeartOutlined, HeartFilled, StarFilled } from "@ant-design/icons";
+import {
+  HeartOutlined,
+  HeartFilled,
+  StarFilled,
+  DeleteOutlined,
+} from "@ant-design/icons";
 
 import {
   Card,
@@ -39,6 +44,43 @@ const EditProduct = () => {
   const [seller, setSeller] = useState({});
   const [buttonLoading, setButtonLoading] = useState(false);
   const token = sessionStorage.getItem("accessToken");
+
+  const deleteProduct = async () => {
+    console.log("product: ", product);
+    try {
+      setButtonLoading(true);
+      if (!sessionStorage.getItem("accessToken")) {
+        navigate("/register");
+      } else {
+        await handleDelete();
+      }
+    } catch (error) {
+      message.error("Bir hata oluştu.");
+      console.error("Error:", error);
+    }
+    navigate("/profile");
+    setButtonLoading(false);
+  };
+  const handleDelete = async () => {
+    let hideLoadingMessage = null;
+    try {
+      hideLoadingMessage = message.loading("Ürün siliniyor...", 0);
+      await axios.delete(
+        `http://127.0.0.1:8000/seller/profile/products/${product.id}/`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      hideLoadingMessage();
+      message.success("Sepetten silindi!");
+    } catch (error) {
+      console.error("Error:", error);
+      if (hideLoadingMessage) hideLoadingMessage();
+      message.error("Tekrar dene");
+    }
+  };
 
   const onFileChange = (event) => {
     setPhotoUpdated(true);
@@ -455,9 +497,30 @@ const EditProduct = () => {
             </div>
           </Row>
           {id != 0 ? (
-            <Button type="primary" htmlType="submit">
-              Güncelle
-            </Button>
+            <div>
+              <Button type="primary" htmlType="submit">
+                Güncelle
+              </Button>
+              <ConfigProvider
+                theme={{
+                  components: {
+                    Button: {
+                      colorPrimary: "#e34b4b",
+                      colorPrimaryHover: "#f56464",
+                    },
+                  },
+                }}
+              >
+                <Button
+                  type="primary"
+                  onClick={() => deleteProduct(product)}
+                  icon={<DeleteOutlined />}
+                  disabled={buttonLoading}
+                >
+                  Sil
+                </Button>
+              </ConfigProvider>
+            </div>
           ) : (
             <Button type="primary" htmlType="submit">
               Ürün Ekle
