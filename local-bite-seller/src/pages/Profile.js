@@ -21,7 +21,12 @@ import {
   message,
 } from "antd";
 
-import { EditOutlined, UserOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  EditOutlined,
+  UserOutlined,
+  DeleteOutlined,
+  FileImageOutlined,
+} from "@ant-design/icons";
 
 export default function ProfilePage() {
   const { id } = useParams();
@@ -159,6 +164,14 @@ export default function ProfilePage() {
   };
 
   const handleNewProduct = () => {
+    console.log(seller);
+
+    for (let [key, val] of Object.entries(seller)) {
+      if (val === null && key !== "cover_photo") {
+        message.error("Öncelikle Mağaza Bilgilerini Doldurunuz.");
+      }
+      console.log("val: ", val);
+    }
     navigate(`/editProduct/${seller.id}/0`);
   };
   const handleEditProduct = (id) => {
@@ -393,22 +406,25 @@ export default function ProfilePage() {
                                           border: "solid 1px lightGray",
                                         }}
                                       >
-                                        {product?.photos !== null ? (
+                                        {product?.photos ? (
                                           <img
-                                            src={product.photos} // replace with your image path
+                                            src={product.photos}
                                             alt={product.name}
+                                            style={{
+                                              cursor: "pointer",
+                                              width: "100%",
+                                              height: "150px",
+                                            }}
                                             onClick={() =>
                                               navigate(`/product/${product.id}`)
                                             }
-                                            style={{
-                                              width: "100%",
-                                              height: "150px",
-                                              cursor: "pointer",
-                                            }}
                                           />
                                         ) : (
-                                          <UserOutlined />
+                                          <FileImageOutlined
+                                            style={{ fontSize: "150px" }}
+                                          />
                                         )}
+
                                         <p>{product.name}</p>
                                         <p>
                                           {product.unit} -{" "}

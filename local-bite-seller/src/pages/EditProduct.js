@@ -516,6 +516,7 @@ const EditProduct = () => {
                   onClick={() => deleteProduct(product)}
                   icon={<DeleteOutlined />}
                   disabled={buttonLoading}
+                  style={{ marginLeft: "24px" }}
                 >
                   Sil
                 </Button>

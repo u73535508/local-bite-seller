@@ -264,6 +264,12 @@ const UpdateShopProfile = ({ sellerId }) => {
               />
               <Form.Item
                 name="photo"
+                rules={[
+                  {
+                    required: true,
+                    message: "Lütfen fotoğraf yükleyin.",
+                  },
+                ]}
                 valuePropName="fileList"
                 getValueFromEvent={(e) => {
                   // Ensure the file is handled correctly

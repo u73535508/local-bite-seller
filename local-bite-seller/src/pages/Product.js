@@ -25,7 +25,11 @@ import {
   Image,
   message,
 } from "antd";
-import { ShoppingCartOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  ShoppingCartOutlined,
+  DeleteOutlined,
+  FileImageOutlined,
+} from "@ant-design/icons";
 import axios from "axios";
 import { WarningContext } from "antd/es/_util/warning";
 
@@ -328,37 +332,9 @@ const Product = () => {
           border: "solid 1px lightGray",
         }}
       >
-        <Row style={{ justifyContent: "space-between", alignItems: "center" }}>
-          <Title style={{ marginLeft: "24px" }} level={2}>
-            {product.name}
-            {renderAverageRating()}
-          </Title>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginRight: "65px",
-            }}
-          >
-            <Avatar
-              size={40}
-              style={{
-                backgroundColor: "#E9AA53",
-                cursor: "pointer",
-                marginRight: "10px",
-              }}
-              onClick={navigateToSellerPage}
-            >
-              {product.seller.id}
-            </Avatar>
-            <Title
-              style={{ margin: "0", fontSize: "20px", fontWeight: "500" }}
-              level={2}
-            >
-              {seller?.brand_name}
-            </Title>
-          </div>
-        </Row>
+        {/* <Row
+          style={{ justifyContent: "space-between", alignItems: "center" }}
+        ></Row> */}
         <Row
           style={{
             padding: "24px",
@@ -367,14 +343,22 @@ const Product = () => {
           }}
         >
           <Col span={6}>
-            <img
-              src="https://img.kwcdn.com/product/Fancyalgo/VirtualModelMatting/39f72400ec0e6d36c17c5a807b148146.jpg?imageMogr2/auto-orient%7CimageView2/2/w/800/q/70/format/webp" // replace with your image path
-              alt={product.name}
-              style={{
-                width: "160px",
-                height: "160px",
-              }}
-            />
+            <Title style={{ marginLeft: "24px" }} level={2}>
+              {product.name}
+              {renderAverageRating()}
+            </Title>
+            {product?.photos ? (
+              <img
+                src={product?.photos}
+                alt={product.name}
+                style={{
+                  width: "160px",
+                  height: "160px",
+                }}
+              />
+            ) : (
+              <FileImageOutlined style={{ fontSize: "150px" }} />
+            )}
           </Col>
           <Col span={6}>
             <Text style={{ fontSize: "16px" }}>
@@ -412,10 +396,54 @@ const Product = () => {
                     display: "flex",
                     flexDirection: "column",
                     gap: "20px",
+                    marginRight: "50px",
                   }}
                 >
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Avatar
+                      size={120}
+                      style={{
+                        // backgroundColor: "#E9AA53",
+                        cursor: "pointer",
+                        justifyContent: "center",
+                      }}
+                      onClick={navigateToSellerPage}
+                    >
+                      {seller?.photo ? (
+                        <img
+                          src={seller?.photo}
+                          alt={seller?.brand_name}
+                          style={{
+                            cursor: "pointer",
+                            width: "100%",
+                            height: "150px",
+                          }}
+                        />
+                      ) : (
+                        <FileImageOutlined style={{ fontSize: "150px" }} />
+                      )}
+                    </Avatar>
+                    <Title
+                      style={{
+                        margin: "0",
+                        fontSize: "20px",
+                        fontWeight: "500",
+                        marginTop: "20px",
+                      }}
+                      level={2}
+                    >
+                      {seller?.brand_name}
+                    </Title>
+                  </div>
                   <Button
-                    style={{}}
+                    style={{ marginTop: "150px" }}
                     onClick={() => handleEditProduct(product.id)}
                   >
                     <EditOutlined />
@@ -519,9 +547,11 @@ const Product = () => {
         <Row>
           <Text style={{ marginLeft: "24px" }}>{product.description}</Text>
         </Row>
-        <Title level={4}>Yorumlar</Title>
+        <Title style={{ marginLeft: "24px" }} level={4}>
+          Yorumlar
+        </Title>
         {reviews.length > 0 && (
-          <div style={{ marginTop: "20px" }}>
+          <div style={{ marginTop: "20px", marginLeft: "24px" }}>
             {loading ? (
               <div
                 style={{
@@ -557,7 +587,9 @@ const Product = () => {
             )}
           </div>
         )}
-        {reviews.length === 0 && <p>Henüz yorum yapılmamıştır.</p>}
+        {reviews.length === 0 && (
+          <p style={{ marginLeft: "24px" }}>Henüz yorum yapılmamıştır.</p>
+        )}
       </Card>
     </ConfigProvider>
   );

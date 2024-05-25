@@ -11,6 +11,7 @@ const UpdateProfile = () => {
   const [loading, setLoading] = useState(true);
   const [fetchingInfos, setFetchingInfos] = useState(false);
   const [form] = Form.useForm();
+  const [buttonLoading, setButtonLoading] = useState(false);
 
   useEffect(() => {
     setFetchingInfos(true);
@@ -60,6 +61,7 @@ const UpdateProfile = () => {
   const onFinish = async (values) => {
     let hideLoadingMessage = null;
     setLoading(true);
+    setButtonLoading(true);
     try {
       hideLoadingMessage = message.loading("Bilgileriniz güncelleniyor...", 0);
       const res = await axios.put(
@@ -79,6 +81,7 @@ const UpdateProfile = () => {
       message.error("Bilgileriniz güncellenirken bir hata oluştu.");
     } finally {
       setLoading(false);
+      setButtonLoading(false);
     }
   };
 
@@ -159,7 +162,11 @@ const UpdateProfile = () => {
                 <Input />
               </Form.Item>
               <Form.Item>
-                <Button type="primary" htmlType="submit" loading={loading}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={buttonLoading}
+                >
                   Güncelle
                 </Button>
               </Form.Item>

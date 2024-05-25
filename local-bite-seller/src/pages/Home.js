@@ -5,7 +5,11 @@ import { useLocation } from "react-router-dom";
 import { Card, Spin, message } from "antd";
 import { useSelector } from "react-redux";
 import { Menu, ConfigProvider } from "antd";
-import { HeartOutlined, HeartFilled } from "@ant-design/icons";
+import {
+  HeartOutlined,
+  HeartFilled,
+  FileImageOutlined,
+} from "@ant-design/icons";
 import axios from "axios";
 import ChatBox from "../common/Chatbox";
 import { useUser } from "../contexts/UserContext";
@@ -150,14 +154,19 @@ const Home = ({ searchText }) => {
                 width: 200,
                 margin: 16,
                 border: "0.5px solid lightGray",
+                cursor: "pointer",
               }}
+              onClick={() => navigate(`/product/${product.id}`)}
             >
-              <img
-                src="https://img.kwcdn.com/product/Fancyalgo/VirtualModelMatting/39f72400ec0e6d36c17c5a807b148146.jpg?imageMogr2/auto-orient%7CimageView2/2/w/800/q/70/format/webp" // replace with your image path
-                alt={product.name}
-                style={{ cursor: "pointer", width: "100%", height: "150px" }}
-                onClick={() => navigate(`/product/${product.id}`)}
-              />
+              {product?.photos ? (
+                <img
+                  src={product.photos}
+                  alt={product.name}
+                  style={{ cursor: "pointer", width: "100%", height: "150px" }}
+                />
+              ) : (
+                <FileImageOutlined style={{ fontSize: "150px" }} />
+              )}
 
               <p>{product.name}</p>
               <p>

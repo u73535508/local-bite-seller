@@ -212,7 +212,20 @@ const Navbar = ({ onSearch }) => {
               <Menu.Item
                 key="info"
                 icon={<InfoCircleOutlined />}
-                onClick={() => navigate(`/profile`)}
+                onClick={() => {
+                  console.log(seller);
+
+                  for (let [key, val] of Object.entries(seller)) {
+                    if (val === null && key !== "cover_photo") {
+                      message.error("Öncelikle Mağaza Bilgilerini Doldurunuz.");
+                      navigate(`/editProfile/${seller.id}`);
+                      return;
+                    }
+                    console.log("val: ", val);
+                  }
+
+                  navigate(`/profile`);
+                }}
               >
                 Profilim
               </Menu.Item>
