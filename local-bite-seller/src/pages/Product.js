@@ -25,7 +25,7 @@ import {
   Image,
   message,
 } from "antd";
-import { ShoppingCartOutlined } from "@ant-design/icons";
+import { ShoppingCartOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { WarningContext } from "antd/es/_util/warning";
 
@@ -43,6 +43,43 @@ const Product = () => {
   const [currentSeller, setCurrentSeller] = useState({});
   const token = sessionStorage.getItem("accessToken");
   const [user, setUser] = useState(null);
+  const [buttonLoading, setButtonLoading] = useState(false);
+  const deleteProduct = async () => {
+    console.log("product: ", product);
+    try {
+      setButtonLoading(true);
+      if (!sessionStorage.getItem("accessToken")) {
+        navigate("/register");
+      } else {
+        await handleDelete();
+      }
+    } catch (error) {
+      message.error("Bir hata oluştu.");
+      console.error("Error:", error);
+    }
+    navigate("/");
+    setButtonLoading(false);
+  };
+  const handleDelete = async () => {
+    let hideLoadingMessage = null;
+    try {
+      hideLoadingMessage = message.loading("Ürün siliniyor...", 0);
+      await axios.delete(
+        `http://127.0.0.1:8000/seller/profile/products/${product.id}/`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      hideLoadingMessage();
+      message.success("Sepetten silindi!");
+    } catch (error) {
+      console.error("Error:", error);
+      if (hideLoadingMessage) hideLoadingMessage();
+      message.error("Tekrar dene");
+    }
+  };
 
   const navigateToSellerPage = () => {
     navigate(`/seller/${product.seller}`);
@@ -370,13 +407,40 @@ const Product = () => {
                   marginBottom: "14px",
                 }}
               >
-                <Button
-                  style={{}}
-                  onClick={() => handleEditProduct(product.id)}
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "20px",
+                  }}
                 >
-                  <EditOutlined />
-                  Düzenle
-                </Button>
+                  <Button
+                    style={{}}
+                    onClick={() => handleEditProduct(product.id)}
+                  >
+                    <EditOutlined />
+                    Düzenle
+                  </Button>
+                  <ConfigProvider
+                    theme={{
+                      components: {
+                        Button: {
+                          colorPrimary: "#e34b4b",
+                          colorPrimaryHover: "#f56464",
+                        },
+                      },
+                    }}
+                  >
+                    <Button
+                      type="primary"
+                      onClick={deleteProduct}
+                      icon={<DeleteOutlined />}
+                      disabled={buttonLoading}
+                    >
+                      Sil
+                    </Button>
+                  </ConfigProvider>
+                </div>
               </div>
             )}
             {/* <br />
