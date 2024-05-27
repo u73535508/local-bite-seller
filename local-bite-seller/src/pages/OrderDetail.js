@@ -178,12 +178,15 @@ export const OrderDetail = () => {
           <div>
             <h3>Ürün Adı:</h3>
             <p>{orderItem?.cart_item.product.name}</p>
-            {orderItem?.cart_item.product.photos && (
-              <img
-                style={{ width: "150px", height: "150px" }}
-                src={orderItem?.cart_item.product.photos}
-              />
-            )}
+
+            <Image
+              style={{ width: "150px", height: "150px" }}
+              src={
+                orderItem?.cart_item.product.photos
+                  ? orderItem?.cart_item.product.photos
+                  : "https://via.placeholder.com/200x150?text=No+Image"
+              }
+            />
           </div>
           <div>
             <h3>Ürün Adeti:</h3>

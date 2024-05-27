@@ -168,22 +168,22 @@ export const Orders = () => {
                   <div>
                     <h2>{order.cart_item_product.name}</h2>
 
-                    {order.cart_item_product.photos ? (
-                      <img
-                        src={order.cart_item_product.photos}
-                        alt={order.cart_item_product.name}
-                        style={{
-                          cursor: "pointer",
-                          width: "150px",
-                          height: "150px",
-                        }}
-                        onClick={() =>
-                          navigate(`/product/${order.cart_item_product.id}`)
-                        }
-                      />
-                    ) : (
-                      <FileImageOutlined style={{ fontSize: "150px" }} />
-                    )}
+                    <Image
+                      src={
+                        order.cart_item_product.photos
+                          ? order.cart_item_product.photos
+                          : "https://via.placeholder.com/200x150?text=No+Image"
+                      }
+                      alt={order.cart_item_product.name}
+                      style={{
+                        cursor: "pointer",
+                        width: "150px",
+                        height: "150px",
+                      }}
+                      onClick={() =>
+                        navigate(`/product/${order.cart_item_product.id}`)
+                      }
+                    />
                   </div>
                   <div>
                     <h3>Adet:</h3>

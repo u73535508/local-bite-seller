@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import { Card, Spin, message } from "antd";
+import { Card, Spin, message, Image } from "antd";
 import { useSelector } from "react-redux";
 import { Menu, ConfigProvider } from "antd";
 import {
@@ -158,20 +158,52 @@ const Home = ({ searchText }) => {
               }}
               onClick={() => navigate(`/product/${product.id}`)}
             >
-              {product?.photos ? (
-                <img
-                  src={product.photos}
-                  alt={product.name}
-                  style={{ cursor: "pointer", width: "100%", height: "150px" }}
-                />
-              ) : (
-                <FileImageOutlined style={{ fontSize: "150px" }} />
-              )}
+              <Image
+                src={
+                  product.photos
+                    ? product.photos
+                    : "https://via.placeholder.com/200x150?text=No+Image"
+                }
+                alt={product.name}
+                style={{ cursor: "pointer", width: "100%", height: "150px" }}
+              />
 
+              <div style={{ padding: "10px 0" }}>
+                <p
+                  style={{
+                    fontWeight: "bold",
+                    marginBottom: 8,
+                    color: "#55B45D",
+                  }}
+                >
+                  {product.price_per_unit} TL
+                </p>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <p
+                    style={{
+                      fontWeight: "bold",
+                      color: "#555",
+                      marginRight: 10,
+                    }}
+                  >
+                    {product.name}
+                  </p>
+                  <p
+                    style={{
+                      color: "gray",
+                      fontStyle: "italic",
+                      fontWeight: "300",
+                    }}
+                  >
+                    {product.unit}
+                  </p>
+                </div>
+              </div>
+              {/*
               <p>{product.name}</p>
               <p>
                 {product.unit} - {product.price_per_unit} TL
-              </p>
+              </p> */}
             </Card>
           ))
         ) : (

@@ -84,6 +84,7 @@ const EditProduct = () => {
 
   const onFileChange = (event) => {
     setPhotoUpdated(true);
+    console.log("file: ", event);
     setFile(event.target.files[0]);
   };
   const onFinish = async (values) => {
@@ -93,32 +94,32 @@ const EditProduct = () => {
     console.log(seller);
     try {
       hideLoadingMessage = message.loading("Bilgileriniz güncelleniyor...", 0);
-      if (id != 0) {
-        console.log("ıms");
-        let formData = new FormData();
-        if (photoUpdated && file) {
-          formData.append("photos", file);
-          console.log("photo appended");
-          // formData.append("cover_photo", file2);
-        }
-        Object.keys(values).forEach((key) => {
-          console.log(key);
-          if (values[key] instanceof FileList) {
-            if (!photoUpdated) {
-              if (key !== "photos") {
-                formData.append(key, values[key][0]);
-              }
-            }
-          } else {
+      console.log("ıms");
+      let formData = new FormData();
+      if (photoUpdated && file) {
+        formData.append("photos", file);
+        console.log("photo appended");
+        // formData.append("cover_photo", file2);
+      }
+      Object.keys(values).forEach((key) => {
+        console.log(key);
+        if (values[key] instanceof FileList) {
+          if (!photoUpdated) {
             if (key !== "photos") {
-              formData.append(key, values[key]);
+              formData.append(key, values[key][0]);
             }
           }
-        });
-        formData.append("subcategory", 1);
-        // formData.append("seller", seller.id);
-        console.log(formData);
+        } else {
+          if (key !== "photos") {
+            formData.append(key, values[key]);
+          }
+        }
+      });
+      formData.append("subcategory", 1);
+      // formData.append("seller", seller.id);
+      console.log(formData);
 
+      if (id != 0) {
         res = await axios.put(
           `http://127.0.0.1:8000/seller/profile/products/${product.id}/`,
           formData,
@@ -130,9 +131,14 @@ const EditProduct = () => {
           }
         );
       } else {
+        // if (photoUpdated && file) {
+        //   values["photos"] = file;
+        //   console.log("photo appended");
+        //   // formData.append("cover_photo", file2);
+        // }
         res = await axios.post(
           `http://127.0.0.1:8000/seller/profile/products/`,
-          { ...values, subcategory: 1, seller: seller },
+          formData,
           {
             headers: {
               Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
@@ -148,6 +154,7 @@ const EditProduct = () => {
       console.error(error);
       message.error("Bilgileriniz güncellenirken bir hata oluştu.");
     } finally {
+      navigate("/profile");
       console.log("res: ", res);
       if (id === "0") {
         const _id = res.data.id;

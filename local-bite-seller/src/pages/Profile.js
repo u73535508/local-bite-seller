@@ -114,7 +114,7 @@ export default function ProfilePage() {
     };
 
     const fetchSellerProducts = async (sellerId) => {
-      setLoadingProducts(true);
+      // setLoadingProducts(true);
       try {
         const response = await axios.get(
           `http://127.0.0.1:8000/seller/${sellerId}/products/`
@@ -253,7 +253,7 @@ export default function ProfilePage() {
               >
                 <div style={{ width: "160px", height: "160px" }}>
                   {seller?.photo !== null ? (
-                    <img
+                    <Image
                       src={seller?.photo}
                       // alt={seller.brand_name}
                       style={{
@@ -406,25 +406,21 @@ export default function ProfilePage() {
                                           border: "solid 1px lightGray",
                                         }}
                                       >
-                                        {product?.photos ? (
-                                          <img
-                                            src={product.photos}
-                                            alt={product.name}
-                                            style={{
-                                              cursor: "pointer",
-                                              width: "100%",
-                                              height: "150px",
-                                            }}
-                                            onClick={() =>
-                                              navigate(`/product/${product.id}`)
-                                            }
-                                          />
-                                        ) : (
-                                          <FileImageOutlined
-                                            style={{ fontSize: "150px" }}
-                                          />
-                                        )}
-
+                                        <Image
+                                          src={
+                                            product.photos
+                                              ? product.photos
+                                              : "https://via.placeholder.com/200x150?text=No+Image"
+                                          }
+                                          alt={product.name}
+                                          style={{
+                                            width: "160px",
+                                            height: "160px",
+                                          }}
+                                          onClick={() =>
+                                            navigate(`/product/${product.id}`)
+                                          }
+                                        />
                                         <p>{product.name}</p>
                                         <p>
                                           {product.unit} -{" "}

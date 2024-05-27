@@ -343,22 +343,22 @@ const Product = () => {
           }}
         >
           <Col span={6}>
-            <Title style={{ marginLeft: "24px" }} level={2}>
+            <Title level={2}>
               {product.name}
               {renderAverageRating()}
             </Title>
-            {product?.photos ? (
-              <img
-                src={product?.photos}
-                alt={product.name}
-                style={{
-                  width: "160px",
-                  height: "160px",
-                }}
-              />
-            ) : (
-              <FileImageOutlined style={{ fontSize: "150px" }} />
-            )}
+            <Image
+              src={
+                product?.photos
+                  ? product?.photos
+                  : "https://via.placeholder.com/200x150?text=No+Image"
+              }
+              alt={product?.name}
+              style={{
+                width: "160px",
+                height: "160px",
+              }}
+            />
           </Col>
           <Col span={6}>
             <Text style={{ fontSize: "16px" }}>
