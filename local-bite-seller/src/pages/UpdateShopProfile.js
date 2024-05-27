@@ -90,6 +90,8 @@ const UpdateShopProfile = ({ sellerId }) => {
           if (key !== "photo") {
             formData.append(key, values[key]);
           }
+        } else {
+          formData.append(key, values[key]);
         }
       }
     }
